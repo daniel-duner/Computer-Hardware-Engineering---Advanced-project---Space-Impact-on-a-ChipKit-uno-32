@@ -21,13 +21,8 @@ int main(void) {
 	display_string(3, "Welcome!");
 	display_update();
 	
-	display_image(96, icon);
-	
 	labinit(); /* Do any lab-specific initialization */
 
-	while( 1 )
-	{
-	  labwork(); /* Do lab-specific things again and again */
-	}
+
 	return 0;
 }
