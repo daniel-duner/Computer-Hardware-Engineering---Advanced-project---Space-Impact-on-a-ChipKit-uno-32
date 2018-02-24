@@ -43,8 +43,8 @@ void tick( unsigned int * timep );
 void display_debug( volatile int * const addr );
 
 /* Declare bitmap array containing font */
-extern uint8_t game[128*4];
-extern uint8_t font[128*4];
+extern uint8_t game[128*8];
+extern uint8_t font[128*8];
 /* Declare bitmap array containing icon */
 /* Declare text buffer for display output */
 extern char textbuffer[4][16];

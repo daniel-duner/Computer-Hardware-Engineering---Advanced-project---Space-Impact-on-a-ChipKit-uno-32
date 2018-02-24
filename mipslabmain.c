@@ -15,6 +15,9 @@ int shipX[] = {0,1,3,4,2,3,5,0,1,3,4};
 int ship_placementY=16;
 int ship_placementX=4;
 */
+int mytime = 0x5957;
+int count;
+int coordinate = 0;
 void move_ship(int x, int y){
 }
 
@@ -23,6 +26,21 @@ void set_coordinate(int x, int y){
     if (y > 0) { offset = y / 8; }
     game[offset * 128 + x] |= 1 << (y - offset * 8);
 };
+void user_isr( void )
+{
+    count++;
+    IFS(0)=0;
+    if (count==10) {
+        coordinate += 5;
+        display_image(game);
+        count=0;
+    }
+    if(coordinate == 15){
+        clear_game();
+        coordinate = 0;
+    }
+    return;/**/
+}
 
 int main(void) {
        // display_string(0, "--Space Impact");
@@ -30,7 +48,11 @@ int main(void) {
 
             set_init();
             display_init();
-
+            int i;
+            int a[7] = {20,20,8,28,20,28,8};
+            for (i = 0; i < 7;i++){
+                game[i+256]=a[i];
+            }
             //display_string(0, "KTH/ICT lab");
             //display_string(1, "in Computer");
             //display_string(2, "Engineering");

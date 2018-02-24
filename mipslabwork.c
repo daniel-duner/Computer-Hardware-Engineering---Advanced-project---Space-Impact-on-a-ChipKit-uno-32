@@ -14,10 +14,6 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 
-int mytime = 0x5957;
-int count;
-int coordinate = 0;
-
 char textstring[] = "text, more text, and even more text!";
 
 /* Interrupt Service Routine */
@@ -38,21 +34,6 @@ return;
 */
 /* Lab-specific initialization goes here */
 
-void user_isr( void )
-{
-    count++;
-    IFS(0)=0;
-    if (count==10) {
-        coordinate += 5;
-        display_image(game);
-        count=0;
-    }
-    if(coordinate == 15){
-        clear_game();
-        coordinate = 0;
-    }
-    return;/**/
-}
 
 void labinit( void )
 {
