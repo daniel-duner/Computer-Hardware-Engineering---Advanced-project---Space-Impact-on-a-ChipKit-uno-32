@@ -160,6 +160,52 @@ void display_image(uint8_t array[]) {
 	}
 }
 
+/*our functions*/
+//initializing
+void set_init(void){
+    /*
+   This will set the peripheral bus clock to the same frequency
+   as the sysclock. That means 80 MHz, when the microcontroller
+   is running at 80 MHz. Changed 2017, as recommended by Axel.
+ */
+    SYSKEY = 0xAA996655;  /* Unlock OSCCON, step 1 */
+    SYSKEY = 0x556699AA;  /* Unlock OSCCON, step 2 */
+    while(OSCCON & (1 << 21)); /* Wait until PBDIV ready */
+    OSCCONCLR = 0x180000; /* clear PBDIV bit <0,1> */
+    while(OSCCON & (1 << 21));  /* Wait until PBDIV ready */
+    SYSKEY = 0x0;  /* Lock OSCCON */
+
+    /* Set up output pins */
+    AD1PCFG = 0xFFFF;
+    ODCE = 0x0;
+    TRISECLR = 0xFF;
+    PORTE = 0x0;
+
+    /* Output pins for display signals */
+    PORTF = 0xFFFF;
+    PORTG = (1 << 9);
+    ODCF = 0x0;
+    ODCG = 0x0;
+    TRISFCLR = 0x70;
+    TRISGCLR = 0x200;
+
+    /* Set up input pins */
+    TRISDSET = (1 << 8);
+    TRISFSET = (1 << 1);
+
+    /* Set up SPI as master */
+    SPI2CON = 0;
+    SPI2BRG = 4;
+    /* SPI2STAT bit SPIROV = 0; */
+    SPI2STATCLR = 0x40;
+    /* SPI2CON bit CKP = 1; */
+    SPI2CONSET = 0x40;
+    /* SPI2CON bit MSTEN = 1; */
+    SPI2CONSET = 0x20;
+    /* SPI2CON bit ON = 1; */
+    SPI2CONSET = 0x8000;
+}
+//light up the game "board" on the screen
 void display_game(uint8_t array[]) {
     int i, j, k;
 
@@ -180,7 +226,7 @@ void display_game(uint8_t array[]) {
 
         }
     }
-
+//clear the game board "tun on all pixels"
 void clear_game(){
     int i, j;
         for (i = 0; i < 4; i++) {
@@ -200,12 +246,35 @@ void clear_game(){
         }
     }
 }
+//clear the game board "set the game array to 0"
 void clr_game(){
     int i = 0;
     for (i; i< 1024; i++){
         game[i] = 0;
     }
 }
+
+void move_ship(int x, int y, int setClr) {
+    ship_placementX = x;
+    ship_placementY = y;
+    int i;
+    for (i = 0; i < 11; i++) {
+        set_coordinate((x + ship[i]), (y + ship[i+11]), setClr);
+    }
+}
+
+void set_coordinate(int x, int y, int setClr){
+    short part = 0;
+    if (y > 0) {
+        part = y / 8;
+    }
+    if(setClr == 1){
+        game[part * 128 + x] |= 1 << (y - part * 8);
+    }
+    if(setClr == 0){
+        game[part * 128 + x] &= ~(1 << (y - part * 8));
+    }
+};
 
 void display_update(void) {
     int i, j, k;
@@ -230,6 +299,10 @@ void display_update(void) {
         }
     }
 }
+
+
+
+
 
 /* Helper function, local to this file.
    Converts a number to hexadecimal ASCII digits. */
@@ -321,48 +394,5 @@ char * itoaconv( int num )
   return( &itoa_buffer[ i + 1 ] );
 }
 
-//Initializing
-void set_init(void){
-    /*
-   This will set the peripheral bus clock to the same frequency
-   as the sysclock. That means 80 MHz, when the microcontroller
-   is running at 80 MHz. Changed 2017, as recommended by Axel.
- */
-    SYSKEY = 0xAA996655;  /* Unlock OSCCON, step 1 */
-    SYSKEY = 0x556699AA;  /* Unlock OSCCON, step 2 */
-    while(OSCCON & (1 << 21)); /* Wait until PBDIV ready */
-    OSCCONCLR = 0x180000; /* clear PBDIV bit <0,1> */
-    while(OSCCON & (1 << 21));  /* Wait until PBDIV ready */
-    SYSKEY = 0x0;  /* Lock OSCCON */
 
-    /* Set up output pins */
-    AD1PCFG = 0xFFFF;
-    ODCE = 0x0;
-    TRISECLR = 0xFF;
-    PORTE = 0x0;
-
-    /* Output pins for display signals */
-    PORTF = 0xFFFF;
-    PORTG = (1 << 9);
-    ODCF = 0x0;
-    ODCG = 0x0;
-    TRISFCLR = 0x70;
-    TRISGCLR = 0x200;
-
-    /* Set up input pins */
-    TRISDSET = (1 << 8);
-    TRISFSET = (1 << 1);
-
-    /* Set up SPI as master */
-    SPI2CON = 0;
-    SPI2BRG = 4;
-    /* SPI2STAT bit SPIROV = 0; */
-    SPI2STATCLR = 0x40;
-    /* SPI2CON bit CKP = 1; */
-    SPI2CONSET = 0x40;
-    /* SPI2CON bit MSTEN = 1; */
-    SPI2CONSET = 0x20;
-    /* SPI2CON bit ON = 1; */
-    SPI2CONSET = 0x8000;
-}
 

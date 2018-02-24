@@ -10,54 +10,48 @@
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
-int shipY[] = {0,0,0,0,1,1,1,2,2,2,2};
-int shipX[] = {0,1,3,4,2,3,5,0,1,3,4};
+//x värden fram till hälften 11 värden, resten y värden alltså {x1,x2,...y1,y2}
 int ship_placementY=0;
 int ship_placementX=0;
-
 int mytime = 0x5957;
-int count;
-int coordinate = 0;
-
-void move_ship(int x, int y) {
-    ship_placementX = x;
-    ship_placementY = y;
-    int i;
-    for (i = 0; i < 11; i++) {
-        set_coordinate((x + shipX[i]), (y + shipY[i]));
-    }
-}
+int count = 0;
 
 
-void set_coordinate(int x, int y){
-    short offset = 0;
-    if (y > 0) { offset = y / 8; }
-    game[offset * 128 + x] |= 1 << (y - offset * 8);
-};
 void user_isr( void )
 {
-    count++;
     IFS(0)=0;
+    /*
+    count++;
+    if(count == 5){
+        move_ship(ship_placementX+1,ship_placementY+1,1);
+        display_image(game);
+        delay (100);
+        move_ship(ship_placementX,ship_placementY+1,0);
+        display_image(game);
+    }
     if (count==10) {
-        coordinate += 5;
+        ate += 5;
         int i;
-        move_ship(64,12);
+        move_ship(ship_placementX-1,ship_placementY-1,1);
+        display_image(game);
+        delay (100);
+        move_ship(ship_placementX-1,ship_placementY-1,0);
         display_image(game);
         count=0;
     }
-    if(coordinate == 15){
+    if(count = 19){
         clr_game();
         display_image(game);
-        delay(100);
-        coordinate = 0;
-    }
-    return;/**/
+    }/**/
+    return;
 }
 
 int main(void) {
-       // display_string(0, "--Space Impact");
-        //display_update();
-
+            labinit();
+            clear_game();
+            // display_string(0, "--Space Impact");
+            //display_update();
+            // move_ship(64,12,1);
             set_init();
             display_init();
             //display_string(0, "KTH/ICT lab");
@@ -66,7 +60,7 @@ int main(void) {
             //display_string(3, "Welcome!");
             //display_update();
             //display_game(0, game);
-            labinit(); /* Do any lab-specific initialization */
+             /* Do any lab-specific initialization */
     while(1) {
 
        }

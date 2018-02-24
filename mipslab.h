@@ -14,13 +14,15 @@ void display_init(void);
 void display_string(int line, char *s);
 void display_update(void);
 void display_game(uint8_t array[]);
-void move_ship(int x, int y);
+void move_ship(int x, int y, int setClr);
 void test(void);
-void set_coordinate(int x, int y);
+void set_coordinate(int x, int y,int setClr);
 uint8_t spi_send_recv(uint8_t data);
 
 void clear_game(void);
 void clr_game(void);
+extern int ship_placementY;
+extern int ship_placementX;
 
 /* Declare lab-related functions from mipslabfunc.c */
 char * itoaconv( int num );
@@ -45,7 +47,8 @@ void display_debug( volatile int * const addr );
 
 /* Declare bitmap array containing font */
 extern uint8_t game[128*4];
-extern uint8_t font[128*4];
+extern uint8_t font[128*8];
+int ship[22];
 /* Declare bitmap array containing icon */
 /* Declare text buffer for display output */
 extern char textbuffer[4][16];
