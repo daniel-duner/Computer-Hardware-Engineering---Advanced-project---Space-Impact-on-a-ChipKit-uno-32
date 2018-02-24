@@ -9,17 +9,24 @@
 
 
 /* Declare display-related functions from mipslabfunc.c */
-void display_image(int x, uint8_t *data);
+void display_image(uint8_t array[]);
 void display_init(void);
 void display_string(int line, char *s);
 void display_update(void);
+void display_game(uint8_t array[]);
+void move_ship(int x, int y);
+void test(void);
+void set_coordinate(int x, int y);
 uint8_t spi_send_recv(uint8_t data);
+
+void clear_game(void);
 
 /* Declare lab-related functions from mipslabfunc.c */
 char * itoaconv( int num );
 int nextprime( int inval );
 void quicksleep(int cyc);
 void tick( unsigned int * timep );
+
 
 /* Declare display_debug - a function to help debugging.
 
@@ -36,9 +43,9 @@ void tick( unsigned int * timep );
 void display_debug( volatile int * const addr );
 
 /* Declare bitmap array containing font */
-extern uint8_t font[128*8];
+extern uint8_t game[128*4];
+extern uint8_t font[128*4];
 /* Declare bitmap array containing icon */
-extern uint8_t icon[128];
 /* Declare text buffer for display output */
 extern char textbuffer[4][16];
 

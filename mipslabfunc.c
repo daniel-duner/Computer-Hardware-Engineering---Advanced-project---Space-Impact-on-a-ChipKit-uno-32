@@ -141,7 +141,7 @@ void display_string(int line, char *s) {
 			textbuffer[line][i] = ' ';
 }
 
-void display_image(int x, uint8_t *data) {
+void display_image(uint8_t array[]) {
 	int i, j;
 	
 	for(i = 0; i < 4; i++) {
@@ -150,38 +150,79 @@ void display_image(int x, uint8_t *data) {
 		spi_send_recv(0x22);
 		spi_send_recv(i);
 		
-		spi_send_recv(x & 0xF);
-		spi_send_recv(0x10 | ((x >> 4) & 0xF));
+		spi_send_recv(0 & 0xF);
+		spi_send_recv(0x10 | ((0 >> 4) & 0xF));
 		
 		DISPLAY_CHANGE_TO_DATA_MODE;
 		
-		for(j = 0; j < 32; j++)
-			spi_send_recv(~data[i*32 + j]);
+		for(j = 0; j < 128; j++)
+            spi_send_recv(~array[i*128+j]);
 	}
 }
 
+void display_game(uint8_t array[]) {
+    int i, j, k;
+
+        for (i = 0; i < 4; i++) {
+            DISPLAY_CHANGE_TO_COMMAND_MODE;
+
+            spi_send_recv(0x22);
+            spi_send_recv(i);
+
+            spi_send_recv(0 & 0xF);
+            spi_send_recv(0x10 | ((0 >> 4) & 0xF));
+
+            DISPLAY_CHANGE_TO_DATA_MODE;
+            for (j =0; j < 128;j++) {
+                spi_send_recv(~array[((i*32)+j)]);
+            }
+
+
+        }
+    }
+
+void clear_game(){
+    int i, j;
+        for (i = 0; i < 4; i++) {
+            DISPLAY_CHANGE_TO_COMMAND_MODE;
+
+            spi_send_recv(0x22);
+            spi_send_recv(i);
+
+            spi_send_recv(0 & 0xF);
+            spi_send_recv(0x10 | ((0 >> 4) & 0xF));
+
+            DISPLAY_CHANGE_TO_DATA_MODE;
+
+            for (j = 0; j < 128; j++) {
+            spi_send_recv(0);
+
+        }
+    }
+};
+
 void display_update(void) {
-	int i, j, k;
-	int c;
-	for(i = 0; i < 4; i++) {
-		DISPLAY_CHANGE_TO_COMMAND_MODE;
-		spi_send_recv(0x22);
-		spi_send_recv(i);
-		
-		spi_send_recv(0x0);
-		spi_send_recv(0x10);
-		
-		DISPLAY_CHANGE_TO_DATA_MODE;
-		
-		for(j = 0; j < 16; j++) {
-			c = textbuffer[i][j];
-			if(c & 0x80)
-				continue;
-			
-			for(k = 0; k < 8; k++)
-				spi_send_recv(font[c*8 + k]);
-		}
-	}
+    int i, j, k;
+    int c;
+    for(i = 0; i < 4; i++) {
+        DISPLAY_CHANGE_TO_COMMAND_MODE;
+        spi_send_recv(0x22);
+        spi_send_recv(i);
+
+        spi_send_recv(0x0);
+        spi_send_recv(0x10);
+
+        DISPLAY_CHANGE_TO_DATA_MODE;
+
+        for(j = 0; j < 16; j++) {
+            c = textbuffer[i][j];
+            if(c & 0x80)
+                continue;
+
+            for(k = 0; k < 8; k++)
+                spi_send_recv(font[c*8 + k]);
+        }
+    }
 }
 
 /* Helper function, local to this file.
@@ -192,55 +233,6 @@ static void num32asc( char * s, int n )
   for( i = 28; i >= 0; i -= 4 )
     *s++ = "0123456789ABCDEF"[ (n >> i) & 15 ];
 }
-
-/*
- * nextprime
- * 
- * Return the first prime number larger than the integer
- * given as a parameter. The integer must be positive.
- */
-#define PRIME_FALSE   0     /* Constant to help readability. */
-#define PRIME_TRUE    1     /* Constant to help readability. */
-int nextprime( int inval )
-{
-   register int perhapsprime = 0; /* Holds a tentative prime while we check it. */
-   register int testfactor; /* Holds various factors for which we test perhapsprime. */
-   register int found;      /* Flag, false until we find a prime. */
-
-   if (inval < 3 )          /* Initial sanity check of parameter. */
-   {
-     if(inval <= 0) return(1);  /* Return 1 for zero or negative input. */
-     if(inval == 1) return(2);  /* Easy special case. */
-     if(inval == 2) return(3);  /* Easy special case. */
-   }
-   else
-   {
-     /* Testing an even number for primeness is pointless, since
-      * all even numbers are divisible by 2. Therefore, we make sure
-      * that perhapsprime is larger than the parameter, and odd. */
-     perhapsprime = ( inval + 1 ) | 1 ;
-   }
-   /* While prime not found, loop. */
-   for( found = PRIME_FALSE; found != PRIME_TRUE; perhapsprime += 2 )
-   {
-     /* Check factors from 3 up to perhapsprime/2. */
-     for( testfactor = 3; testfactor <= (perhapsprime >> 1) + 1; testfactor += 1 )
-     {
-       found = PRIME_TRUE;      /* Assume we will find a prime. */
-       if( (perhapsprime % testfactor) == 0 ) /* If testfactor divides perhapsprime... */
-       {
-         found = PRIME_FALSE;   /* ...then, perhapsprime was non-prime. */
-         goto check_next_prime; /* Break the inner loop, go test a new perhapsprime. */
-       }
-     }
-     check_next_prime:;         /* This label is used to break the inner loop. */
-     if( found == PRIME_TRUE )  /* If the loop ended normally, we found a prime. */
-     {
-       return( perhapsprime );  /* Return the prime we found. */
-     } 
-   }
-   return( perhapsprime );      /* When the loop ends, perhapsprime is a real prime. */
-} 
 
 /*
  * itoa
@@ -367,3 +359,4 @@ void set_init(void){
     /* SPI2CON bit ON = 1; */
     SPI2CONSET = 0x8000;
 }
+

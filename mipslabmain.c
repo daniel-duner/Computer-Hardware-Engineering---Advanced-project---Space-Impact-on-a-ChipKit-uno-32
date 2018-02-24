@@ -10,19 +10,38 @@
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
+/*int shipY[] = {0,0,0,0,1,1,1,0,0,0,0};
+int shipX[] = {0,1,3,4,2,3,5,0,1,3,4};
+int ship_placementY=16;
+int ship_placementX=4;
+*/
+void move_ship(int x, int y){
+}
+
+void set_coordinate(int x, int y){
+    short offset = 0;
+    if (y > 0) { offset = y / 8; }
+    game[offset * 128 + x] |= 1 << (y - offset * 8);
+};
 
 int main(void) {
-     set_init();
-	
-	display_init();
-	display_string(0, "KTH/ICT lab");
-	display_string(1, "in Computer");
-	display_string(2, "Engineering");
-	display_string(3, "Welcome!");
-	display_update();
-	
-	labinit(); /* Do any lab-specific initialization */
+       // display_string(0, "--Space Impact");
+        //display_update();
 
+            set_init();
+            display_init();
+
+            //display_string(0, "KTH/ICT lab");
+            //display_string(1, "in Computer");
+            //display_string(2, "Engineering");
+            //display_string(3, "Welcome!");
+            //display_update();
+            //display_game(0, game);
+            labinit(); /* Do any lab-specific initialization */
+    while(1) {
+
+
+       }
 
 	return 0;
 }

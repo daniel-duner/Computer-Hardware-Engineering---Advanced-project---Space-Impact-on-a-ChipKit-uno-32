@@ -16,14 +16,14 @@
 
 int mytime = 0x5957;
 int count;
-int prime=1234567;
+int coordinate = 0;
 
 char textstring[] = "text, more text, and even more text!";
 
 /* Interrupt Service Routine */
+/*
 void user_isr( void )
 {
-
         count++;
         IFS(0)=0;
         if (count==10) {
@@ -35,15 +35,32 @@ void user_isr( void )
         }
 return;
     }
-
+*/
 /* Lab-specific initialization goes here */
+
+void user_isr( void )
+{
+    count++;
+    IFS(0)=0;
+    if (count==10) {
+        coordinate += 5;
+        display_image(game);
+        count=0;
+    }
+    if(coordinate == 15){
+        clear_game();
+        coordinate = 0;
+    }
+    return;/**/
+}
+
 void labinit( void )
 {
     volatile int * trise = (volatile int *) 0xbf886100;
     volatile int * porte = (volatile int *) 0xbf886110;
     *porte=0;
     PORTD= PORTD | (0x7f0);
-    T2CONSET = 0x0070;
+    T2CONSET = 0x70;
     PR2 = 31250;
     IPC(2)=0x1f;
     IFS(0)=0;
