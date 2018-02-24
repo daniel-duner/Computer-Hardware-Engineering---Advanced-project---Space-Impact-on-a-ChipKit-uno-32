@@ -15,11 +15,13 @@ int shipX[] = {0,1,3,4,2,3,5,0,1,3,4};
 int ship_placementY=16;
 int ship_placementX=4;
 */
+int a[7] = {20,20,8,28,20,28,8};
 int mytime = 0x5957;
 int count;
 int coordinate = 0;
 void move_ship(int x, int y){
 }
+
 
 void set_coordinate(int x, int y){
     short offset = 0;
@@ -32,11 +34,18 @@ void user_isr( void )
     IFS(0)=0;
     if (count==10) {
         coordinate += 5;
+        int i;
+        set_coordinate(64,16);
+        for (i = 0; i < 7;i++){
+            game[i+0]=a[i];
+        }
         display_image(game);
         count=0;
     }
     if(coordinate == 15){
-        clear_game();
+        clr_game();
+        display_image(game);
+        delay(100);
         coordinate = 0;
     }
     return;/**/
@@ -48,11 +57,6 @@ int main(void) {
 
             set_init();
             display_init();
-            int i;
-            int a[7] = {20,20,8,28,20,28,8};
-            for (i = 0; i < 7;i++){
-                game[i+256]=a[i];
-            }
             //display_string(0, "KTH/ICT lab");
             //display_string(1, "in Computer");
             //display_string(2, "Engineering");
@@ -61,7 +65,6 @@ int main(void) {
             //display_game(0, game);
             labinit(); /* Do any lab-specific initialization */
     while(1) {
-
 
        }
 

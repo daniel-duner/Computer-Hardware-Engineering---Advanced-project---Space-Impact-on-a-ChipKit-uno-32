@@ -199,7 +199,13 @@ void clear_game(){
 
         }
     }
-};
+}
+void clr_game(){
+    int i = 0;
+    for (i; i< 1024; i++){
+        game[i] = 0;
+    }
+}
 
 void display_update(void) {
     int i, j, k;
