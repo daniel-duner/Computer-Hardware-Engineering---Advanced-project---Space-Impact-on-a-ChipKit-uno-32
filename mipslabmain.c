@@ -4,7 +4,7 @@
    modified 2015, 2017 by F Lundevall
 
    Latest update 2017-04-21 by F Lundevall
-   
+
    For copyright and licensing, see file COPYING */
 
 #include <stdint.h>   /* Declarations of uint_32 and the like */
@@ -14,44 +14,21 @@
 int ship_placementY=0;
 int ship_placementX=0;
 int mytime = 0x5957;
-int count = 0;
+int count=0;
+int coordinate = 0;
 
 
 void user_isr( void )
 {
     IFS(0)=0;
-    /*
     count++;
-    if(count == 5){
-        move_ship(ship_placementX+1,ship_placementY+1,1);
-        display_image(game);
-        delay (100);
-        move_ship(ship_placementX,ship_placementY+1,0);
-        display_image(game);
-    }
-    if (count==10) {
-        ate += 5;
-        int i;
-        move_ship(ship_placementX-1,ship_placementY-1,1);
-        display_image(game);
-        delay (100);
-        move_ship(ship_placementX-1,ship_placementY-1,0);
-        display_image(game);
-        count=0;
-    }
-    if(count = 19){
-        clr_game();
-        display_image(game);
-    }/**/
+    if (count = 10);
+    //display_image(game);
     return;
 }
 
 int main(void) {
-            labinit();
-            clear_game();
-            // display_string(0, "--Space Impact");
-            //display_update();
-            // move_ship(64,12,1);
+            move_ship(64,12,1);
             set_init();
             display_init();
             //display_string(0, "KTH/ICT lab");
@@ -60,9 +37,26 @@ int main(void) {
             //display_string(3, "Welcome!");
             //display_update();
             //display_game(0, game);
-             /* Do any lab-specific initialization */
+            labinit(); /* Do any lab-specific initialization */
     while(1) {
+        //move up button 2
+        if ((getbtns() & 0x1) == 1){
+            move_ship(ship_placementX,ship_placementY, 0);
+            move_ship(ship_placementX,ship_placementY-2, 1);
+        }
+        //move down button 3
+        if ((getbtns() & 0x3) == 2 && ship_placementY < 29){
+            {
+                move_ship(ship_placementX, ship_placementY, 0);
+                move_ship(ship_placementX, ship_placementY+2, 1);
+            }
+        }
+        if ((getbtns() & 0x2) == 2){
+            move_ship(ship_placementX,ship_placementY, 0);
+            move_ship(ship_placementX,ship_placementY+2, 1);
+        }
 
+        display_image(game);
        }
 
 	return 0;

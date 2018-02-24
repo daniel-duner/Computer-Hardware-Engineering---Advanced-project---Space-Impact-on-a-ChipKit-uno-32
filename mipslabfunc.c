@@ -143,18 +143,18 @@ void display_string(int line, char *s) {
 
 void display_image(uint8_t array[]) {
 	int i, j;
-	
+
 	for(i = 0; i < 4; i++) {
 		DISPLAY_CHANGE_TO_COMMAND_MODE;
 
 		spi_send_recv(0x22);
 		spi_send_recv(i);
-		
+
 		spi_send_recv(0 & 0xF);
 		spi_send_recv(0x10 | ((0 >> 4) & 0xF));
-		
+
 		DISPLAY_CHANGE_TO_DATA_MODE;
-		
+
 		for(j = 0; j < 128; j++)
             spi_send_recv(~array[i*128+j]);
 	}
@@ -207,24 +207,22 @@ void set_init(void){
 }
 //light up the game "board" on the screen
 void display_game(uint8_t array[]) {
-    int i, j, k;
+    int i, j;
 
-        for (i = 0; i < 4; i++) {
-            DISPLAY_CHANGE_TO_COMMAND_MODE;
+    for(i = 0; i < 4; i++) {
+        DISPLAY_CHANGE_TO_COMMAND_MODE;
 
-            spi_send_recv(0x22);
-            spi_send_recv(i);
+        spi_send_recv(0x22);
+        spi_send_recv(i);
 
-            spi_send_recv(0 & 0xF);
-            spi_send_recv(0x10 | ((0 >> 4) & 0xF));
+        spi_send_recv(0 & 0xF);
+        spi_send_recv(0x10 | ((0 >> 4) & 0xF));
 
-            DISPLAY_CHANGE_TO_DATA_MODE;
-            for (j =0; j < 128;j++) {
-                spi_send_recv(~array[((i*32)+j)]);
-            }
+        DISPLAY_CHANGE_TO_DATA_MODE;
 
-
-        }
+        for(j = 0; j < 128; j++)
+            spi_send_recv(~array[i*128+j]);
+    }
     }
 //clear the game board "tun on all pixels"
 void clear_game(){
