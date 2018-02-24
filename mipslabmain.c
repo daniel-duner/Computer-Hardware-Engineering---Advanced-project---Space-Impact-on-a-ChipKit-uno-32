@@ -10,16 +10,22 @@
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
-/*int shipY[] = {0,0,0,0,1,1,1,0,0,0,0};
+int shipY[] = {0,0,0,0,1,1,1,2,2,2,2};
 int shipX[] = {0,1,3,4,2,3,5,0,1,3,4};
-int ship_placementY=16;
-int ship_placementX=4;
-*/
-int a[7] = {20,20,8,28,20,28,8};
+int ship_placementY=0;
+int ship_placementX=0;
+
 int mytime = 0x5957;
 int count;
 int coordinate = 0;
-void move_ship(int x, int y){
+
+void move_ship(int x, int y) {
+    ship_placementX = x;
+    ship_placementY = y;
+    int i;
+    for (i = 0; i < 11; i++) {
+        set_coordinate((x + shipX[i]), (y + shipY[i]));
+    }
 }
 
 
@@ -35,10 +41,7 @@ void user_isr( void )
     if (count==10) {
         coordinate += 5;
         int i;
-        set_coordinate(64,16);
-        for (i = 0; i < 7;i++){
-            game[i+0]=a[i];
-        }
+        move_ship(64,12);
         display_image(game);
         count=0;
     }
