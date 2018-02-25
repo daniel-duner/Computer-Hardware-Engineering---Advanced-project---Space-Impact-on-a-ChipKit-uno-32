@@ -9,8 +9,16 @@
 #include "mipslab.h"  /* Declatations for these labs */
 int ship[] = {0,1,3,4,2,3,5,0,1,3,4,0,0,0,0,1,1,1,2,2,2,2};
 char textbuffer[4][16];
+uint8_t projectiles[128*4]={0};
 //uint8_t game[128*4];
 uint8_t game[128*4]={0};
+uint8_t map[256]={0};
+uint8_t cloud_1[12]={112,72,68,70,73,65,65,74,68,68,72,48};
+uint8_t cloud_2[7]={48,72,68,132,72,72,48};
+uint8_t cloud_3[12]={8,20,100,130,69,65,161,130,138,132,76,56};
+
+
+
 uint8_t font[] = {
         0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0,

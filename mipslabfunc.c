@@ -22,7 +22,14 @@ static void num32asc( char * s, int );
 
 #define DISPLAY_TURN_OFF_VDD (PORTFSET = 0x40)
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
+secCount = 0;
+buttonCount=0;
+projectileCount = 0;
+createProjectileCount = 0;
+mapCount = 0;
+createMapCount=0;
 
+/* TIMER*/
 /* quicksleep:
    A simple function to create a small delay.
    Very inefficient use of computing resources,
@@ -31,7 +38,6 @@ void quicksleep(int cyc) {
 	int i;
 	for(i = cyc; i > 0; i--);
 }
-
 /* tick:
    Add 1 to time in memory, at location pointed to by parameter.
    Time is stored as 4 pairs of 2 NBCD-digits.
@@ -66,7 +72,13 @@ void tick( unsigned int * timep )
 
   * timep = t; /* Store new value */
 }
-
+void user_isr( void )
+{
+    IFS(0)=0;
+    secCount++;
+    if (secCount= 10);
+    return;
+}
 /* display_debug
    A function to help debugging.
 
@@ -79,7 +91,9 @@ void tick( unsigned int * timep )
    Note: When you use this function, you should comment out any
    repeated calls to display_image; display_image overwrites
    about half of the digits shown by display_debug.
-*/   
+*/
+
+/*DISPLAY*/
 void display_debug( volatile int * const addr )
 {
   display_string( 1, "Addr" );
@@ -160,7 +174,74 @@ void display_image(uint8_t array[]) {
 	}
 }
 
-/*our functions*/
+void display_update(void) {
+    int i, j, k;
+    int c;
+    for(i = 0; i < 4; i++) {
+        DISPLAY_CHANGE_TO_COMMAND_MODE;
+        spi_send_recv(0x22);
+        spi_send_recv(i);
+
+        spi_send_recv(0x0);
+        spi_send_recv(0x10);
+
+        DISPLAY_CHANGE_TO_DATA_MODE;
+
+        for(j = 0; j < 16; j++) {
+            c = textbuffer[i][j];
+            if(c & 0x80)
+                continue;
+
+            for(k = 0; k < 8; k++)
+                spi_send_recv(font[c*8 + k]);
+        }
+    }
+}
+
+//light up the game "board" on the screen
+void display_game(uint8_t array[]) {
+    int i, j;
+
+    for(i = 0; i < 4; i++) {
+        DISPLAY_CHANGE_TO_COMMAND_MODE;
+
+        spi_send_recv(0x22);
+        spi_send_recv(i);
+
+        spi_send_recv(0 & 0xF);
+        spi_send_recv(0x10 | ((0 >> 4) & 0xF));
+
+        DISPLAY_CHANGE_TO_DATA_MODE;
+
+        for(j = 0; j < 128; j++)
+            spi_send_recv(~array[i*128+j]);
+    }
+}
+
+//clear the game board "tun on all pixels"
+void clear_game(){
+    int i, j;
+    for (i = 0; i < 4; i++) {
+        DISPLAY_CHANGE_TO_COMMAND_MODE;
+
+        spi_send_recv(0x22);
+        spi_send_recv(i);
+
+        spi_send_recv(0 & 0xF);
+        spi_send_recv(0x10 | ((0 >> 4) & 0xF));
+
+        DISPLAY_CHANGE_TO_DATA_MODE;
+
+        for (j = 0; j < 128; j++) {
+            spi_send_recv(0);
+
+        }
+    }
+}
+
+
+
+/**/
 //initializing
 void set_init(void){
     /*
@@ -205,45 +286,6 @@ void set_init(void){
     /* SPI2CON bit ON = 1; */
     SPI2CONSET = 0x8000;
 }
-//light up the game "board" on the screen
-void display_game(uint8_t array[]) {
-    int i, j;
-
-    for(i = 0; i < 4; i++) {
-        DISPLAY_CHANGE_TO_COMMAND_MODE;
-
-        spi_send_recv(0x22);
-        spi_send_recv(i);
-
-        spi_send_recv(0 & 0xF);
-        spi_send_recv(0x10 | ((0 >> 4) & 0xF));
-
-        DISPLAY_CHANGE_TO_DATA_MODE;
-
-        for(j = 0; j < 128; j++)
-            spi_send_recv(~array[i*128+j]);
-    }
-    }
-//clear the game board "tun on all pixels"
-void clear_game(){
-    int i, j;
-        for (i = 0; i < 4; i++) {
-            DISPLAY_CHANGE_TO_COMMAND_MODE;
-
-            spi_send_recv(0x22);
-            spi_send_recv(i);
-
-            spi_send_recv(0 & 0xF);
-            spi_send_recv(0x10 | ((0 >> 4) & 0xF));
-
-            DISPLAY_CHANGE_TO_DATA_MODE;
-
-            for (j = 0; j < 128; j++) {
-            spi_send_recv(0);
-
-        }
-    }
-}
 //clear the game board "set the game array to 0"
 void clr_game(){
     int i = 0;
@@ -252,54 +294,163 @@ void clr_game(){
     }
 }
 
-void move_ship(int x, int y, int setClr) {
-    ship_placementX = x;
-    ship_placementY = y;
+void paint_map(void){
+    int i,k,r = 0;
+
+    for (i = 0; i < 256;i=+16){
+//        switch(r){
+//            case 0:
+                for (k=0;k<12;k++){
+                    map[i+k] = cloud_1[k];
+/*               }
+                break;
+            case 1:
+                for (k=0;k<7;k++){
+                    map[i+k+4] = cloud_2[k];
+                }
+                break;
+            case 3:
+                for (k=0;k<12;k++){
+                    map[i+k+2] = cloud_3[k];
+                }
+                break;
+
+       */ }
+
+    }
+}
+void move_map(void){
     int i;
-    for (i = 0; i < 11; i++) {
-        set_coordinate((x + ship[i]), (y + ship[i+11]), setClr);
+        for (i = 0; i < 256; i++) {
+            map[i] = map[i + 1];
+            map[i+1] = 0;
+        }
+
+}
+void update_map(void){
+    int i,k=0;
+    for (i = 128*3; i<128*4;i++) {
+        game[i] |= map[i-k];
+        k++;
     }
 }
 
-void set_coordinate(int x, int y, int setClr){
+/*
+int get_coordinate(int x, int y){
+    int coordinate;
     short part = 0;
     if (y > 0) {
         part = y / 8;
+    coordinate = (int)part*128+x;
+    return coordinate;
+}*/
+
+void move(int x, int y, int array[], int arrayLength){
+    int i;
+    for (i = 0; i < arrayLength;i++) {
+        set_coordinate((ship_placementX+array[i]),(ship_placementY+array[i+arrayLength/2]), game,0);
     }
-    if(setClr == 1){
-        game[part * 128 + x] |= 1 << (y - part * 8);
-    }
-    if(setClr == 0){
-        game[part * 128 + x] &= ~(1 << (y - part * 8));
-    }
-};
-
-void display_update(void) {
-    int i, j, k;
-    int c;
-    for(i = 0; i < 4; i++) {
-        DISPLAY_CHANGE_TO_COMMAND_MODE;
-        spi_send_recv(0x22);
-        spi_send_recv(i);
-
-        spi_send_recv(0x0);
-        spi_send_recv(0x10);
-
-        DISPLAY_CHANGE_TO_DATA_MODE;
-
-        for(j = 0; j < 16; j++) {
-            c = textbuffer[i][j];
-            if(c & 0x80)
-                continue;
-
-            for(k = 0; k < 8; k++)
-                spi_send_recv(font[c*8 + k]);
-        }
+    ship_placementX = x;
+    ship_placementY = y;
+    for (i = 0; i < arrayLength;i++){
+        set_coordinate((x+array[i]),(y+array[i+(arrayLength/2)]),game,1);
     }
 }
 
+void start_pos(void){
+    move(4,16,ship,22);
+}
 
+void set_coordinate(int x, int y, uint8_t array[], int setClr){
+    short part = 0;
+    if (y > 0) {
+        part = y/8;
+    }
+    if(setClr == 1){
+        array[part * 128 + x] |= 1 << (y - part * 8);
+    }
+    if(setClr == 0){
+        array[part * 128 + x] &= ~(1 << (y - part * 8));
+    }
+}
 
+void move_projectiles(void){
+    int i,j;
+    for (j=0; j < 4;j++) {
+        for (i = 127+(j*128); i > 128*j; i--) {
+            projectiles[i] = projectiles[i - 1];
+            projectiles[i-1] = 0;
+        }
+    }
+
+}
+
+void update_game(uint8_t arr[]){
+    int i;
+    for (i = 0; i<128*4;i++) {
+        game[i] |= arr[i];
+    }
+
+}
+
+void create_projectile(int startX, int startY, int faction){
+        set_coordinate(startX, startY, projectiles, 1);
+        set_coordinate(startX+1, startY, projectiles, 1);
+}
+
+/*RUN*/
+void run_map(void){
+    if (mapCount ==10){
+        move_map();
+        mapCount=0;
+    }
+    mapCount++;
+    if(createMapCount == 200){
+        paint_map();
+        createMapCount=0;
+    }
+    createMapCount++;
+
+}
+
+void run_projectile(void){
+    if(projectileCount == 10){
+        move_projectiles();
+        projectileCount=0;
+    }
+    projectileCount++;
+    if(createProjectileCount < 100){
+        //shoot
+        createProjectileCount = 100;
+        if ((getbtns() & 0x1) == 1) {
+            create_projectile(ship_placementX+5,ship_placementY+1,1);
+        }
+    }
+    createProjectileCount++;
+    if (createProjectileCount == 200){
+        createProjectileCount = 0;
+    }
+}
+
+void run_Control(void){
+    if(buttonCount < 100) {
+        buttonCount= 100;
+        //move up button 2
+        if ((getbtns() & 0x2) == 2 && ship_placementY > 3) {
+            move(ship_placementX, ship_placementY - 1, ship, 22);
+        }
+        //move down button 3
+        if ((getbtns() & 0x4) == 4 && ship_placementY < 20) {
+            {
+                move(ship_placementX, ship_placementY + 1, ship, 22);
+            }
+        }
+    }
+    buttonCount++;
+    if (buttonCount== 120){
+        buttonCount = 0;
+    }
+}
 
 
 /* Helper function, local to this file.

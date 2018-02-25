@@ -10,3 +10,4 @@ int getbtns (void){
     int btn= ((PORTD & 0xe0)>> 5);
     return btn;
 }
+

@@ -7,22 +7,44 @@
 
    For copyright and licensing, see file COPYING */
 
-
 /* Declare display-related functions from mipslabfunc.c */
 void display_image(uint8_t array[]);
 void display_init(void);
 void display_string(int line, char *s);
 void display_update(void);
 void display_game(uint8_t array[]);
-void move_ship(int x, int y, int setClr);
+void move(int x, int y, int array[],int arrayLength);
 void test(void);
-void set_coordinate(int x, int y,int setClr);
+void set_coordinate(int x, int y, uint8_t array[], int setClr);
 uint8_t spi_send_recv(uint8_t data);
 
 void clear_game(void);
 void clr_game(void);
 extern int ship_placementY;
 extern int ship_placementX;
+void start_pos(void);
+void create_projectile(int startX, int startY, int faction);
+void move_projectiles(void);
+void update_game(uint8_t  arr[]);
+void paint_map(void);
+void move_map(void);
+void update_map(void);
+
+
+
+
+//counters
+extern int commandCount;
+extern int projectileCount;
+extern int createProjectileCount;
+extern int mapCount;
+extern int buttonCount;
+extern int secCount;
+extern int createMapCount;
+
+void run_projectile(void);
+void run_control(void);
+void run_map(void);
 
 /* Declare lab-related functions from mipslabfunc.c */
 char * itoaconv( int num );
@@ -47,8 +69,20 @@ void display_debug( volatile int * const addr );
 
 /* Declare bitmap array containing font */
 extern uint8_t game[128*4];
+extern uint8_t map[256];
+extern uint8_t projectiles[128*4];
 extern uint8_t font[128*8];
 int ship[22];
+extern uint8_t cloud_1[12];
+extern uint8_t cloud_2[7];
+extern uint8_t cloud_3[12];
+extern uint8_t cloud_4[];
+
+
+
+
+
+
 /* Declare bitmap array containing icon */
 /* Declare text buffer for display output */
 extern char textbuffer[4][16];

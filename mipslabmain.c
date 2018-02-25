@@ -14,48 +14,34 @@
 int ship_placementY=0;
 int ship_placementX=0;
 int mytime = 0x5957;
-int count=0;
-int coordinate = 0;
+int count;
 
 
-void user_isr( void )
-{
-    IFS(0)=0;
-    count++;
-    if (count = 10);
-    //display_image(game);
-    return;
-}
 
 int main(void) {
-            move_ship(64,12,1);
             set_init();
+            start_pos();
             display_init();
-            //display_string(0, "KTH/ICT lab");
-            //display_string(1, "in Computer");
-            //display_string(2, "Engineering");
-            //display_string(3, "Welcome!");
-            //display_update();
-            //display_game(0, game);
             labinit(); /* Do any lab-specific initialization */
-    while(1) {
-        //move up button 2
-        if ((getbtns() & 0x1) == 1){
-            move_ship(ship_placementX,ship_placementY, 0);
-            move_ship(ship_placementX,ship_placementY-2, 1);
+   /* while(1){
+        display_string(0, "--Space Impact--");
+        display_string(1, "    To start");
+        display_string(2, "Press any button");
+        display_update();
+        if(getbtns()){
+            break;
         }
-        //move down button 3
-        if ((getbtns() & 0x3) == 2 && ship_placementY < 29){
-            {
-                move_ship(ship_placementX, ship_placementY, 0);
-                move_ship(ship_placementX, ship_placementY+2, 1);
-            }
-        }
-        if ((getbtns() & 0x2) == 2){
-            move_ship(ship_placementX,ship_placementY, 0);
-            move_ship(ship_placementX,ship_placementY+2, 1);
-        }
+    }*/
 
+    while(1) {
+        run_map();
+        run_projectile();
+        run_Control();
+
+        clr_game();
+        update_map();
+        move(ship_placementX,ship_placementY,ship,22);
+        update_game(projectiles);
         display_image(game);
        }
 
