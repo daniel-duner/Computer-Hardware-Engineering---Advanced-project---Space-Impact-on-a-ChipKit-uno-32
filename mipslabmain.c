@@ -35,6 +35,7 @@ int main(void) {
     run_map();
 
     clr_game();
+    paint_life();
     update_map();
     move(ship_placementX,ship_placementY,ship,22);
     update_game(projectiles);
@@ -47,6 +48,7 @@ int main(void) {
         run_Control();
 
         clr_game();
+        paint_life();
         update_map();
         move(ship_placementX,ship_placementY,ship,22);
         update_game(projectiles);

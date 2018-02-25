@@ -29,6 +29,7 @@ void update_game(uint8_t  arr[]);
 void paint_map(void);
 void move_map(void);
 void update_map(void);
+void paint_life(void);
 
 
 
@@ -41,6 +42,7 @@ extern int mapCount;
 extern int buttonCount;
 extern int secCount;
 extern int createMapCount;
+extern int randCount;
 
 void run_projectile(void);
 void run_control(void);
@@ -72,11 +74,16 @@ extern uint8_t game[128*4];
 extern uint8_t map[144];
 extern uint8_t projectiles[128*4];
 extern uint8_t font[128*8];
-int ship[22];
+extern uint8_t life[10];
+extern int ship[22];
 extern uint8_t cloud_1[13];
 extern uint8_t cloud_2[7];
 extern uint8_t cloud_3[12];
 extern uint8_t cloud_4[];
+extern int lives;
+
+//void start_random_counter(void);
+int random(int mod);
 
 
 

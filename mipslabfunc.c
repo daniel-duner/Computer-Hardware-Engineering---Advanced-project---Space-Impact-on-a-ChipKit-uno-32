@@ -8,6 +8,7 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 
+
 /* Declare a helper function which is local to this file */
 static void num32asc( char * s, int ); 
 
@@ -28,6 +29,13 @@ projectileCount = 0;
 createProjectileCount = 0;
 mapCount = 0;
 createMapCount=0;
+lives = 3;
+randCount = 0;
+
+int rand(int mod){
+    return randCount%mod;
+}
+
 
 /* TIMER*/
 /* quicksleep:
@@ -76,7 +84,13 @@ void user_isr( void )
 {
     IFS(0)=0;
     secCount++;
-    if (secCount= 10);
+    if (secCount= 10){
+        secCount =0;
+    };
+    if (randCount == 10) {
+        randCount = 0;
+    }
+    randCount++;
     return;
 }
 /* display_debug
@@ -295,11 +309,27 @@ void clr_game(){
 }
 //skapar kartan i map arrayen, lägger till ett max 16 punkter längst bort
 void paint_map(void){
-    int i,k;
-    for (k=0;k<13;k++){
-        map[128+k] = cloud_1[k];
+    int i,k,r;
+    r = rand(3);
+
+    switch (r){
+        case 0:
+            for (k=0;k<13;k++){
+                map[128+k] = cloud_1[k];
+            }
+            break;
+        case 1:
+            for (k=0;k<7;k++){
+                map[128+k] = cloud_2[k];
+            }
+            break;
+        case 2:
+            for (k=0;k<12;k++){
+                map[128+k] = cloud_3[k];
+            }
+            break;
+
     }
-    map[128] = cloud_1[0];
 
 }
 //gör så att map arrayen rör sig åt vänster
@@ -317,6 +347,37 @@ void update_map(void){
     for (i = 128*3; i<128*4;i++) {
         game[i] |= map[k];
         k++;
+    }
+}
+void paint_life(void){
+    int i;
+ /*   switch(lives){
+        case 1:
+            life[2] = 6;
+            life[3] = 6;
+            for(i=4;i < 10;i++){
+               life[i] = 0;
+            }
+            break;
+        case 2:
+            for (i =2; i < 7; i=+3) {
+                life[i] = 6;
+                life[i+1] = 6;
+            }
+            for(i=6;i < 10;i++){
+                life[i] = 0;
+            }
+            break;
+        case 3:
+            for (i = 2; i < 11; i=+3) {
+                life[i] = 6;
+                life[i+1] = 6;
+    }
+            break;
+
+    }*/
+    for (i = 0; i < 10;i++){
+        game[i] |= life[i];
     }
 }
 
@@ -398,15 +459,15 @@ void run_map(void){
     createMapCount++;
 
 }
-//
+//uppdaterar projektil karta efter knapptryck, samt gör att den rör sig
 void run_projectile(void){
     if(projectileCount == 10){
         move_projectiles();
         projectileCount=0;
     }
     projectileCount++;
-    if(createProjectileCount == 0){
-        //shoot
+    if(createProjectileCount < 1){
+
         createProjectileCount = 1;
         if ((getbtns() & 0x1) == 1) {
             create_projectile(ship_placementX+5,ship_placementY+1,1);
@@ -420,12 +481,12 @@ void run_projectile(void){
         createProjectileCount = 0;
     }
 }
-
+//
 void run_Control(void){
     if(buttonCount < 100) {
         buttonCount= 100;
         //move up button 2
-        if ((getbtns() & 0x2) == 2 && ship_placementY > 3) {
+        if ((getbtns() & 0x2) == 2 && ship_placementY > 4) {
             move(ship_placementX, ship_placementY - 1, ship, 22);
         }
         //move down button 3
