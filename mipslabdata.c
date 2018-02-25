@@ -9,6 +9,14 @@
 #include "mipslab.h"  /* Declatations for these labs */
 int ship[] = {0,1,3,4,2,3,5,0,1,3,4,0,0,0,0,1,1,1,2,2,2,2};
 char textbuffer[4][16];
+int boss[] = {};
+int enemy_1[] = {0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,
+                 0,5,0,2,3,5,0,1,4,5,0,2,3,5,0,5};
+int enemy_2[] = {31,4,10,4,31};
+int life[] = {3,3}
+
+uint8_t enemies[128*4]={31,4,10,4,31}; // First enemy
+uint8_t enemy_projectiles[128*4]={0};
 uint8_t projectiles[128*4]={0};
 //uint8_t game[128*4];
 uint8_t game[128*4]={0};
