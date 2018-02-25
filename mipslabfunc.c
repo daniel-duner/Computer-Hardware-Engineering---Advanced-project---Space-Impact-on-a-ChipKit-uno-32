@@ -401,7 +401,7 @@ void run_projectile(void){
         projectileCount=0;
     }
     projectileCount++;
-    if(createProjectileCount = 0){
+    if(createProjectileCount == 0){
         //shoot
         createProjectileCount = 1;
         if ((getbtns() & 0x1) == 1) {
@@ -412,7 +412,7 @@ void run_projectile(void){
         createProjectileCount++;
     }
 
-    if (createProjectileCount == 200){
+    if (createProjectileCount == 100){
         createProjectileCount = 0;
     }
 }

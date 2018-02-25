@@ -22,7 +22,7 @@ int main(void) {
             start_pos();
             display_init();
             labinit(); /* Do any lab-specific initialization */
-   /* while(1){
+   while(1){
         display_string(0, "--Space Impact--");
         display_string(1, "    To start");
         display_string(2, "Press any button");
@@ -30,7 +30,16 @@ int main(void) {
         if(getbtns()){
             break;
         }
-    }*/
+    }
+
+    run_map();
+
+    clr_game();
+    update_map();
+    move(ship_placementX,ship_placementY,ship,22);
+    update_game(projectiles);
+    display_image(game);
+    delay(100);
 
     while(1) {
         run_map();
