@@ -329,23 +329,23 @@ int get_coordinate(int x, int y){
     coordinate = (int)part*128+x;
     return coordinate;
 }*/
-// ritar ut skeppet
+// ritar ut skeppet, utgår ifrån en skeppets tidigare koordinat
 void move(int x, int y, int array[], int arrayLength){
     int i;
-    for (i = 0; i < arrayLength;i++) {
+    for (i = 0; i < arrayLength/2;i++) {
         set_coordinate((ship_placementX+array[i]),(ship_placementY+array[i+arrayLength/2]), game,0);
     }
     ship_placementX = x;
     ship_placementY = y;
-    for (i = 0; i < arrayLength;i++){
+    for (i = 0; i < arrayLength/2;i++){
         set_coordinate((x+array[i]),(y+array[i+(arrayLength/2)]),game,1);
     }
 }
-
+// sätter skeppets start position
 void start_pos(void){
     move(4,16,ship,22);
 }
-
+//tänder koordinat
 void set_coordinate(int x, int y, uint8_t array[], int setClr){
     short part = 0;
     if (y > 0) {
@@ -358,7 +358,7 @@ void set_coordinate(int x, int y, uint8_t array[], int setClr){
         array[part * 128 + x] &= ~(1 << (y - part * 8));
     }
 }
-
+//rör på prjektilerna från skeppet, åt höger
 void move_projectiles(void){
     int i,j;
     for (j=0; j < 4;j++) {
@@ -369,7 +369,7 @@ void move_projectiles(void){
     }
 
 }
-
+//uppdaterar spelet med en given uint8_t array som är 128*4, såsom projectiles
 void update_game(uint8_t arr[]){
     int i;
     for (i = 0; i<128*4;i++) {
@@ -377,13 +377,14 @@ void update_game(uint8_t arr[]){
     }
 
 }
-
+//skapar projektiler från skeppets främre punkt
 void create_projectile(int startX, int startY, int faction){
         set_coordinate(startX, startY, projectiles, 1);
         set_coordinate(startX+1, startY, projectiles, 1);
 }
 
 /*RUN*/
+//uppdaterar kartan, när mapCount är 15 rör sig kartan, skapar
 void run_map(void){
    if (mapCount == 15){
         move_map();
@@ -397,7 +398,7 @@ void run_map(void){
     createMapCount++;
 
 }
-
+//
 void run_projectile(void){
     if(projectileCount == 10){
         move_projectiles();
