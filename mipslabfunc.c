@@ -296,9 +296,10 @@ void clr_game(){
 
 void paint_map(void){
     int i,k;
-                for (k=0;k<12;k++){
-                    map[128+k] = cloud_1[k];
-                }
+    for (k=0;k<13;k++){
+        map[128+k] = cloud_1[k];
+    }
+    map[128] = cloud_1[0];
 
 }
 void move_map(void){
@@ -382,12 +383,12 @@ void create_projectile(int startX, int startY, int faction){
 
 /*RUN*/
 void run_map(void){
-   if (mapCount == 10){
+   if (mapCount == 15){
         move_map();
         mapCount=0;
     }
     mapCount++;
-    if(createMapCount == 200){
+    if(createMapCount == 300){
         paint_map();
         createMapCount=0;
     }

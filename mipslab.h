@@ -73,7 +73,7 @@ extern uint8_t map[144];
 extern uint8_t projectiles[128*4];
 extern uint8_t font[128*8];
 int ship[22];
-extern uint8_t cloud_1[12];
+extern uint8_t cloud_1[13];
 extern uint8_t cloud_2[7];
 extern uint8_t cloud_3[12];
 extern uint8_t cloud_4[];
