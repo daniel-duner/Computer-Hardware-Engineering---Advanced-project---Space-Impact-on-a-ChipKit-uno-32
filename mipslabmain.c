@@ -14,7 +14,6 @@
 int ship_placementY=0;
 int ship_placementX=0;
 int mytime = 0x5957;
-int count;
 
 
 

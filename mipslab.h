@@ -69,7 +69,7 @@ void display_debug( volatile int * const addr );
 
 /* Declare bitmap array containing font */
 extern uint8_t game[128*4];
-extern uint8_t map[256];
+extern uint8_t map[144];
 extern uint8_t projectiles[128*4];
 extern uint8_t font[128*8];
 int ship[22];

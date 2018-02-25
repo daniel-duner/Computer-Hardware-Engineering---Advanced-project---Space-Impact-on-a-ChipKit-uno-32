@@ -295,33 +295,15 @@ void clr_game(){
 }
 
 void paint_map(void){
-    int i,k,r = 0;
-
-    for (i = 0; i < 256;i=+16){
-//        switch(r){
-//            case 0:
+    int i,k;
                 for (k=0;k<12;k++){
-                    map[i+k] = cloud_1[k];
-/*               }
-                break;
-            case 1:
-                for (k=0;k<7;k++){
-                    map[i+k+4] = cloud_2[k];
+                    map[128+k] = cloud_1[k];
                 }
-                break;
-            case 3:
-                for (k=0;k<12;k++){
-                    map[i+k+2] = cloud_3[k];
-                }
-                break;
 
-       */ }
-
-    }
 }
 void move_map(void){
     int i;
-        for (i = 0; i < 256; i++) {
+        for (i = 0; i < 144; i++) {
             map[i] = map[i + 1];
             map[i+1] = 0;
         }
@@ -330,7 +312,7 @@ void move_map(void){
 void update_map(void){
     int i,k=0;
     for (i = 128*3; i<128*4;i++) {
-        game[i] |= map[i-k];
+        game[i] |= map[k];
         k++;
     }
 }
@@ -400,7 +382,7 @@ void create_projectile(int startX, int startY, int faction){
 
 /*RUN*/
 void run_map(void){
-    if (mapCount ==10){
+   if (mapCount == 10){
         move_map();
         mapCount=0;
     }
@@ -419,14 +401,17 @@ void run_projectile(void){
         projectileCount=0;
     }
     projectileCount++;
-    if(createProjectileCount < 100){
+    if(createProjectileCount = 0){
         //shoot
-        createProjectileCount = 100;
+        createProjectileCount = 1;
         if ((getbtns() & 0x1) == 1) {
             create_projectile(ship_placementX+5,ship_placementY+1,1);
         }
     }
-    createProjectileCount++;
+    if (createProjectileCount >= 1){
+        createProjectileCount++;
+    }
+
     if (createProjectileCount == 200){
         createProjectileCount = 0;
     }
@@ -440,7 +425,7 @@ void run_Control(void){
             move(ship_placementX, ship_placementY - 1, ship, 22);
         }
         //move down button 3
-        if ((getbtns() & 0x4) == 4 && ship_placementY < 20) {
+        if ((getbtns() & 0x4) == 4 && ship_placementY < 28) {
             {
                 move(ship_placementX, ship_placementY + 1, ship, 22);
             }
