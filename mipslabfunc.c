@@ -293,7 +293,7 @@ void clr_game(){
         game[i] = 0;
     }
 }
-
+//skapar kartan i map arrayen, lägger till ett max 16 punkter längst bort
 void paint_map(void){
     int i,k;
     for (k=0;k<13;k++){
@@ -302,6 +302,7 @@ void paint_map(void){
     map[128] = cloud_1[0];
 
 }
+//gör så att map arrayen rör sig åt vänster
 void move_map(void){
     int i;
         for (i = 0; i < 144; i++) {
@@ -310,6 +311,7 @@ void move_map(void){
         }
 
 }
+//lägger in map i game, så att
 void update_map(void){
     int i,k=0;
     for (i = 128*3; i<128*4;i++) {
@@ -327,7 +329,7 @@ int get_coordinate(int x, int y){
     coordinate = (int)part*128+x;
     return coordinate;
 }*/
-
+// ritar ut skeppet
 void move(int x, int y, int array[], int arrayLength){
     int i;
     for (i = 0; i < arrayLength;i++) {
