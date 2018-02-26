@@ -7,25 +7,33 @@
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
+
+
+
 int ship[] = {0,1,3,4,2,3,5,0,1,3,4,0,0,0,0,1,1,1,2,2,2,2};
 char textbuffer[4][16];
-int boss[] = {};
 int enemy_1[] = {0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,
                  0,5,0,2,3,5,0,1,4,5,0,2,3,5,0,5};
 int enemy_2[] = {31,4,10,4,31};
 uint8_t life[10] = {0,0,6,6,0,6,6,0,6,6};
 
-uint8_t enemies[128*4]={31,4,10,4,31}; // First enemy
+int ship2[] = {}; //not yet
+int TIE1[] = {0,5,0,2,3,5,0,1,4,5,0,2,3,5,0,5,//32
+              0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4};
+uint8_t enemies[164*4]={0}; // First enemy
+int enemy_placement1[3];
+
+
 uint8_t enemy_projectiles[128*4]={0};
+
+
 uint8_t projectiles[128*4]={0};
-//uint8_t game[128*4];
 uint8_t game[128*4]={0};
 uint8_t map[144];
 uint8_t cloud_1[13]={0,48,72,	68,	70, 73,65,65,74,68,68,72,48};
 uint8_t cloud_2[7]={48,72,68,132,72,72,48};
 uint8_t cloud_3[13]={24,36,36,36,42,34,33,33,42,36,36,40,16};
 uint8_t cloud_4[15]={24,36,66,66,70,121,65,131,133,129,66,70,57,17,14};
-
 
 
 uint8_t font[] = {

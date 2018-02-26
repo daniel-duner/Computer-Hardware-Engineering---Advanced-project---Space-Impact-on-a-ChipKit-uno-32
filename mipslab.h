@@ -15,7 +15,7 @@ void display_update(void);
 void display_game(uint8_t array[]);
 void move(int x, int y, int array[],int arrayLength);
 void test(void);
-void set_coordinate(int x, int y, uint8_t array[], int setClr);
+void set_coordinate(int x, int y, uint8_t array[], int setClr, int arraySize);
 uint8_t spi_send_recv(uint8_t data);
 
 void clear_game(void);
@@ -31,6 +31,11 @@ void move_map(void);
 void update_map(void);
 void paint_life(void);
 
+//Enemies
+void create_enemy(int x, int y, int array[], int arrayLength,int enemyArr[]);  //new
+void update_enemies(void);
+void spawn_enemy(void);
+
 
 
 
@@ -43,6 +48,18 @@ extern int buttonCount;
 extern int secCount;
 extern int createMapCount;
 extern int randCount;
+extern int spawnEnemyCount;
+
+//
+extern int gamecount;       //count for spawning enemies NEW
+extern int number_of_enemies;
+extern int TIE1_alive;
+extern int TIE2_alive;
+extern int TIE3_alive;
+extern int TIE4_alive;
+extern int TIE5_alive;
+extern int pause;
+
 
 void run_projectile(void);
 void run_control(void);
@@ -81,6 +98,15 @@ extern uint8_t cloud_2[7];
 extern uint8_t cloud_3[13];
 extern uint8_t cloud_4[15];
 extern int lives;
+
+extern uint8_t enemies[4*164];
+extern int TIE1[32]; //new
+// [0] = x coord, [1] = y-coord, [2] = om 1 alive om 0 död
+extern int enemy_placement1[3];
+
+
+
+
 
 //void start_random_counter(void);
 int random(int mod);

@@ -31,6 +31,9 @@ mapCount = 0;
 createMapCount=0;
 lives = 3;
 randCount = 0;
+spawnEnemyCount = 0;
+
+
 
 int rand(int mod){
     return randCount%mod;
@@ -339,13 +342,32 @@ void paint_map(void){
 }
 //gör så att map arrayen rör sig åt vänster
 void move_map(void){
-    int i;
-        for (i = 0; i < 144; i++) {
-            map[i] = map[i + 1];
-            map[i+1] = 0;
-        }
-
+    int i,k;
+    for (i = 0; i < 144; i++) {
+        map[i] = map[i + 1];
+        map[i+1] = 0;
+    }
 }
+
+//rör på fienderna
+void move_enemies(){
+    int k,i;
+    for(k=0;k<4;k++) {
+        for (i = 164*k; i < 164+(164*k); i++) {
+            enemies[i] = enemies[i + 1];
+            enemies[i + 1] = 0;
+        }
+    }
+// ihåg skapaa en funktion för enemy placement där vi tar in en array med enmies och kollar place (kanske)
+    if (enemy_placement1[2] == 1){
+        enemy_placement1[0] =- 1;
+    }
+    if (enemy_placement1[0] == 11){
+        enemy_placement1[2] = 0;
+    }
+}
+
+
 //lägger in map i game, så att
 void update_map(void){
     int i,k=0;
@@ -354,7 +376,15 @@ void update_map(void){
         k++;
     }
 }
-
+void update_enemies(void){
+    int i,k=0,j;
+    for (j = 0; j < 4;j++) {
+        for (i = 128*j; i < 128+128*j; i++) {
+            game[i] |= enemies[k+16+(32*j)];
+            k++;
+        }
+    }
+}
 void paint_life(void){
     int i;
  /*   switch(lives){
@@ -387,6 +417,24 @@ void paint_life(void){
     }
 }
 
+
+//Enemies
+//Ritar ut fiender på en array
+void create_enemy(int x, int y, int character[], int arrayLength, int enemyArr[]){ //new ALL CLEAR
+    int i;
+    enemyArr[0] = x;
+    enemyArr[1] = y;
+    enemyArr[2] = 1;
+    /*
+    for (i = 0; i < arrayLength/2;i++) {
+        set_coordinate((character[i]),(character[i+arrayLength/2]), enemies,0);
+    }*/
+    for (i = 0; i <arrayLength/2;i++){
+        set_coordinate((x+character[i]),(y+character[i+(arrayLength/2)]), enemies,1,164);
+    }
+}
+
+
 /*
 int get_coordinate(int x, int y){
     int coordinate;
@@ -400,12 +448,12 @@ int get_coordinate(int x, int y){
 void move(int x, int y, int array[], int arrayLength){
     int i;
     for (i = 0; i < arrayLength/2;i++) {
-        set_coordinate((ship_placementX+array[i]),(ship_placementY+array[i+arrayLength/2]), game,0);
+        set_coordinate((ship_placementX+array[i]),(ship_placementY+array[i+arrayLength/2]), game,0, 128);
     }
     ship_placementX = x;
     ship_placementY = y;
     for (i = 0; i < arrayLength/2;i++){
-        set_coordinate((x+array[i]),(y+array[i+(arrayLength/2)]),game,1);
+        set_coordinate((x+array[i]),(y+array[i+(arrayLength/2)]),game,1, 128);
     }
 }
 // sätter skeppets start position
@@ -413,16 +461,16 @@ void start_pos(void){
     move(4,16,ship,22);
 }
 //tänder koordinat
-void set_coordinate(int x, int y, uint8_t array[], int setClr){
+void set_coordinate(int x, int y, uint8_t array[], int setClr, int arraySize){
     short part = 0;
     if (y > 0) {
         part = y/8;
     }
     if(setClr == 1){
-        array[part * 128 + x] |= 1 << (y - part * 8);
+        array[part * arraySize + x] |= 1 << (y - part * 8);
     }
     if(setClr == 0){
-        array[part * 128 + x] &= ~(1 << (y - part * 8));
+        array[part * arraySize + x] &= ~(1 << (y - part * 8));
     }
 }
 //rör på prjektilerna från skeppet, åt höger
@@ -446,8 +494,8 @@ void update_game(uint8_t arr[]){
 }
 //skapar projektiler från skeppets främre punkt
 void create_projectile(int startX, int startY, int faction){
-        set_coordinate(startX, startY, projectiles, 1);
-        set_coordinate(startX+1, startY, projectiles, 1);
+        set_coordinate(startX, startY, projectiles, 1, 128);
+        set_coordinate(startX+1, startY, projectiles, 1,128);
 }
 
 /*RUN*/
@@ -455,14 +503,20 @@ void create_projectile(int startX, int startY, int faction){
 void run_map(void){
    if (mapCount == 15){
         move_map();
+       move_enemies();
         mapCount=0;
     }
     mapCount++;
     if(createMapCount == 300){
         paint_map();
         createMapCount=0;
+        spawnEnemyCount++;
     }
     createMapCount++;
+
+    if (spawnEnemyCount == 5){
+        create_enemy(16,10, TIE1, 22, enemy_placement1);
+    }
 
 }
 //uppdaterar projektil karta efter knapptryck, samt gör att den rör sig
