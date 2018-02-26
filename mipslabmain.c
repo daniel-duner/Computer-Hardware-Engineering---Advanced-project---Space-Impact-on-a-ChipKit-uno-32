@@ -49,10 +49,9 @@ int main(void) {
         run_Control();
 
         clr_game();
-        update_enemies();
         paint_life();
         update_map();
-        move(ship_placementX,ship_placementY,TIE1,32);
+        move(ship_placementX,ship_placementY,ship,22);
         update_game(projectiles);
         display_image(game);
        }

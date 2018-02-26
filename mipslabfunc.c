@@ -345,26 +345,25 @@ void move_map(void){
     int i,k;
     for (i = 0; i < 144; i++) {
         map[i] = map[i + 1];
-        map[i+1] = 0;
+        //map[i+1] = 0;
     }
 }
 
 //rör på fienderna
 void move_enemies(){
     int k,i;
-    for(k=0;k<4;k++) {
+  /*  for(k=0;k<4;k++) {
         for (i = 164*k; i < 164+(164*k); i++) {
             enemies[i] = enemies[i + 1];
-            enemies[i + 1] = 0;
+            //enemies[i + 1] = 0;
         }
-    }
+    }*/
 // ihåg skapaa en funktion för enemy placement där vi tar in en array med enmies och kollar place (kanske)
     if (enemy_placement1[2] == 1){
-        enemy_placement1[0] =- 1;
+        enemy_placement1[0]--;
     }
-    if (enemy_placement1[0] == 11){
-        enemy_placement1[2] = 0;
-    }
+
+
 }
 
 
@@ -379,7 +378,7 @@ void update_map(void){
 void update_enemies(void){
     int i,j;
     for (j = 0; j < 4;j++) {
-        for (i = 128*j; i < 128+128*j; i++) {
+        for (i = 0+128*j; i < 128+128*j; i++) {
             game[i] |= enemies[i+16+(32*j)];
         }
     }
@@ -420,16 +419,18 @@ void paint_life(void){
 //Enemies
 //Ritar ut fiender på en array
 void create_enemy(int x, int y, int character[], int arrayLength, int enemyArr[]){ //new ALL CLEAR
-    int i;
-    enemyArr[0] = x;
-    enemyArr[1] = y;
-    enemyArr[2] = 1;
-    /*
-    for (i = 0; i < arrayLength/2;i++) {
-        set_coordinate((character[i]),(character[i+arrayLength/2]), enemies,0);
-    }*/
-    for (i = 0; i <arrayLength/2;i++){
-        set_coordinate((x+character[i]),(y+character[i+(arrayLength/2)]), enemies,1,164);
+    if(enemyArr[2] ==0) {
+        int i;
+        enemyArr[0] = x;
+        enemyArr[1] = y;
+        enemyArr[2] = 1;
+        /*
+        for (i = 0; i < arrayLength/2;i++) {
+            set_coordinate((character[i]),(character[i+arrayLength/2]), enemies,0);
+        }*/
+        for (i = 0; i < arrayLength / 2; i++) {
+            set_coordinate((x + character[i]), (y + character[i + (arrayLength / 2)]), enemies, 1, 164);
+        }
     }
 }
 
@@ -560,7 +561,7 @@ void run_Control(void){
         }
     }
     buttonCount++;
-    if (buttonCount== 120){
+    if (buttonCount== 110){
         buttonCount = 0;
     }
 }

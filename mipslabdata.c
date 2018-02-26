@@ -21,7 +21,7 @@ int ship2[] = {}; //not yet
 int TIE1[] = {0,5,0,2,3,5,0,1,4,5,0,2,3,5,0,5,//32
               0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4};
 uint8_t enemies[164*4]={0}; // First enemy
-int enemy_placement1[3];
+int enemy_placement1[3]={0};
 
 
 uint8_t enemy_projectiles[128*4]={0};
