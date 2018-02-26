@@ -332,7 +332,7 @@ void paint_map(void){
             }
             break;
         case 3:
-            for (k=0;k<15;k++){
+            for (k=0;k<16;k++){
                 map[128+k] = cloud_4[k];
             }
             break;
@@ -377,11 +377,10 @@ void update_map(void){
     }
 }
 void update_enemies(void){
-    int i,k=0,j;
+    int i,j;
     for (j = 0; j < 4;j++) {
         for (i = 128*j; i < 128+128*j; i++) {
-            game[i] |= enemies[k+16+(32*j)];
-            k++;
+            game[i] |= enemies[i+16+(32*j)];
         }
     }
 }
@@ -503,21 +502,25 @@ void create_projectile(int startX, int startY, int faction){
 void run_map(void){
    if (mapCount == 15){
         move_map();
-       move_enemies();
+        move_enemies();
         mapCount=0;
     }
     mapCount++;
     if(createMapCount == 300){
         paint_map();
         createMapCount=0;
-        spawnEnemyCount++;
     }
     createMapCount++;
 
-    if (spawnEnemyCount == 5){
-        create_enemy(16,10, TIE1, 22, enemy_placement1);
+}
+void run_enemies(void){
+    if (createMapCount == 300) {
+        spawnEnemyCount++;
     }
-
+        if (spawnEnemyCount == 3) {
+            create_enemy(150, 16, TIE1, 32, enemy_placement1);
+            spawnEnemyCount = 0;
+        }
 }
 //uppdaterar projektil karta efter knapptryck, samt gör att den rör sig
 void run_projectile(void){

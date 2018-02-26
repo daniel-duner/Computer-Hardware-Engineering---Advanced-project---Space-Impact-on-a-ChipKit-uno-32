@@ -64,6 +64,7 @@ extern int pause;
 void run_projectile(void);
 void run_control(void);
 void run_map(void);
+void run_enemies(void);
 
 /* Declare lab-related functions from mipslabfunc.c */
 char * itoaconv( int num );
@@ -96,7 +97,7 @@ extern int ship[22];
 extern uint8_t cloud_1[13];
 extern uint8_t cloud_2[7];
 extern uint8_t cloud_3[13];
-extern uint8_t cloud_4[15];
+extern uint8_t cloud_4[16];
 extern int lives;
 
 extern uint8_t enemies[4*164];
