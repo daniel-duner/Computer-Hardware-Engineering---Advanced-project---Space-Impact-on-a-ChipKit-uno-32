@@ -16,6 +16,8 @@ void display_game(uint8_t array[]);
 void move(int x, int y, int array[],int arrayLength);
 void test(void);
 void set_coordinate(int x, int y, uint8_t array[], int setClr, int arraySize);
+int get_coordinate(int x, int y, uint8_t arr[], int arraySize);
+
 uint8_t spi_send_recv(uint8_t data);
 
 void clear_game(void);
@@ -55,6 +57,8 @@ extern int buttonCount;
 extern int secCount;
 extern int createMapCount;
 extern int randCount;
+extern int moveEnemiesCount;
+extern int stopMove;
 
 
 
@@ -100,11 +104,12 @@ extern int lives;
 
 extern uint8_t enemies[4*164];
 extern int TIE1[32]; //new
-// [0] = x coord, [1] = y-coord, [2] = om 1 alive om 0 död
-extern int enemy_placement1[3];
-extern int enemy_placement2[3];
+// [0] = x coord, [1] = y-coord, [2] = om 1 alive om 0 död, [3] hp
+extern int enemy_placement1[4];
+extern int enemy_placement2[4];
 void check_enemy_placement(void);
-
+void dmg(uint8_t dealer[], uint8_t receiver[], int character[], int characterLength);
+void kill_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]);
 
 
 

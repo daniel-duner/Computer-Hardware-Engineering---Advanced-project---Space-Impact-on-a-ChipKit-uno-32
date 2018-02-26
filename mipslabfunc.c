@@ -32,11 +32,15 @@ createMapCount=0;
 lives = 3;
 randCount = 0;
 spawnEnemyCount = 0;
+moveEnemiesCount = 0;
+stopMove=0;
 
 
 
 int rand(int mod){
-    return (randCount+createProjectileCount)%mod;
+    int random = (randCount+createProjectileCount)%mod;
+    randCount = 0;
+    return random;
 }
 
 
@@ -357,6 +361,12 @@ void update_map(void){
     }
 }
 
+
+
+
+
+
+
 //Enemies
 //Ritar ut fiender på en array
 void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]){
@@ -364,6 +374,7 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
         enemyStat[0] = x;
         enemyStat[1] = y;
         enemyStat[2] = 1;
+        enemyStat[3] = 1;
         int i;
         for (i = 0; i < arrayLength/2;i++){
             set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,1,164);
@@ -371,6 +382,22 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
     }
 
 }
+
+void kill_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]){
+        int i;
+        stopMove=1;
+        for (i = 0; i < arrayLength/2;i++){
+            set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,0,164);
+        }
+        stopMove=0;
+    enemyStat[0] = 0;
+    enemyStat[1] = 0;
+    enemyStat[2] = 0;
+    enemyStat[3] = 0;
+
+
+}
+
 void check_enemy_placement(void){
        if (enemy_placement1[2] == 1){ 
            enemy_placement1[0]--;     
@@ -416,6 +443,18 @@ void update_enemies(void){
 //lägger in map i game, så att
 
 
+void dmg(uint8_t dealer[], uint8_t receiver[], int character[], int characterLength){
+    if(get_coordinate(receiver[0],receiver[1],dealer,128) == 1){
+        receiver[3]--;
+        set_coordinate(receiver[0],receiver[1],dealer,0,128);
+        set_coordinate(receiver[0]-1,receiver[1]-1,dealer,0,128);
+    }
+    if(receiver[3] == 0){
+        kill_enemy(receiver[0],receiver[1],character,characterLength,enemies);
+    }
+}
+
+
 void paint_life(void){
     int i;
  /* switch(lives){
@@ -448,23 +487,18 @@ void paint_life(void){
     }        
 }
 
-void run_enemies(void){
-    if (spawnEnemyCount == 900){
-        create_enemy(150,18,TIE1,32,enemy_placement1);
-        create_enemy(150,8,TIE1,32,enemy_placement2);
-        spawnEnemyCount = 0;
-    }
-    spawnEnemyCount++;
-}
 
-int get_coordinate(int x, int y) {
+
+int get_coordinate(int x, int y, uint8_t arr[], int arraySize) {
     int coordinate;
     short part = 0;
     if (y > 0) {
         part = y / 8;
-        coordinate = (int) part * 128 + x;
-        return coordinate;
+        y = y -(part*8);
     }
+    coordinate = part * arraySize + x;
+    coordinate = arr[coordinate] >> y && 0x1;
+    return coordinate;
 }
 // ritar ut skeppet, utgår ifrån en skeppets tidigare koordinat
 void move(int x, int y, int array[], int arrayLength){
@@ -482,7 +516,7 @@ void move(int x, int y, int array[], int arrayLength){
 void start_pos(void){
     move(4,16,ship,22);
 }
-//tänder koordinat
+//tänder/släcker pixel (koordinatsystem)
 void set_coordinate(int x, int y, uint8_t array[], int setClr, int arraySize){
     short part = 0;
     if (y > 0) {
@@ -527,8 +561,13 @@ void run_map(void){
         move_map();
         mapCount=0;
     }
-    if (mapCount == 5 || mapCount == 10){
-        move_enemies();
+    if (moveEnemiesCount == 5){
+        if(stopMove == 0){
+            move_enemies();
+        }
+        dmg(projectiles,enemy_placement1,TIE1,32);
+        dmg(projectiles,enemy_placement2,TIE1,32);
+        moveEnemiesCount=0;
     }
     mapCount++;
     if(createMapCount == 300){
@@ -536,6 +575,7 @@ void run_map(void){
         createMapCount=0;
     }
     createMapCount++;
+    moveEnemiesCount++;
 
 }
 
@@ -561,7 +601,8 @@ void run_projectile(void){
         createProjectileCount = 0;
     }
 }
-//
+
+//kollar styrknappar
 void run_Control(void){
     if(buttonCount < 100) {
         buttonCount= 100;
@@ -582,6 +623,15 @@ void run_Control(void){
     }
 }
 
+//kollar spawn enemies
+void run_enemies(void){
+    if (spawnEnemyCount == 900){
+        create_enemy(150,18,TIE1,32,enemy_placement1);
+        create_enemy(150,8,TIE1,32,enemy_placement2);
+        spawnEnemyCount = 0;
+    }
+    spawnEnemyCount++;
+}
 
 /* Helper function, local to this file.
    Converts a number to hexadecimal ASCII digits. */
