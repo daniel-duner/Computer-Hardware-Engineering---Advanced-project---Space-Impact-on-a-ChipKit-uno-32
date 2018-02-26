@@ -310,7 +310,7 @@ void clr_game(){
 //skapar kartan i map arrayen, lägger till ett max 16 punkter längst bort
 void paint_map(void){
     int i,k,r;
-    r = rand(3);
+    r = rand(4);
 
     switch (r){
         case 0:
@@ -320,12 +320,17 @@ void paint_map(void){
             break;
         case 1:
             for (k=0;k<7;k++){
-                map[128+k] = cloud_2[k];
+                map[128+5+k] = cloud_2[k];
             }
             break;
         case 2:
-            for (k=0;k<12;k++){
+            for (k=0;k<13;k++){
                 map[128+k] = cloud_3[k];
+            }
+            break;
+        case 3:
+            for (k=0;k<15;k++){
+                map[128+k] = cloud_4[k];
             }
             break;
 
@@ -349,6 +354,7 @@ void update_map(void){
         k++;
     }
 }
+
 void paint_life(void){
     int i;
  /*   switch(lives){

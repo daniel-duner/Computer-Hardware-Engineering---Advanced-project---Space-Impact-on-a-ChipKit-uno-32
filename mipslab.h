@@ -78,8 +78,8 @@ extern uint8_t life[10];
 extern int ship[22];
 extern uint8_t cloud_1[13];
 extern uint8_t cloud_2[7];
-extern uint8_t cloud_3[12];
-extern uint8_t cloud_4[];
+extern uint8_t cloud_3[13];
+extern uint8_t cloud_4[15];
 extern int lives;
 
 //void start_random_counter(void);
