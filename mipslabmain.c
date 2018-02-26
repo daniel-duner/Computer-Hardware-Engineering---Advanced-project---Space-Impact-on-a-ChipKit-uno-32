@@ -19,7 +19,6 @@ int mytime = 0x5957;
 
 int main(void) {
             set_init();
-            start_pos();
             display_init();
             labinit(); /* Do any lab-specific initialization */
    while(1){
@@ -35,20 +34,20 @@ int main(void) {
     run_map();
 
     clr_game();
-    paint_life();
     update_map();
-    move(ship_placementX,ship_placementY,ship,22);
+    start_pos();
     update_game(projectiles);
     display_image(game);
     delay(100);
 
     while(1) {
         run_map();
-        run_enemies();
         run_projectile();
         run_Control();
+        run_enemies();
 
         clr_game();
+        update_enemies();
         paint_life();
         update_map();
         move(ship_placementX,ship_placementY,ship,22);

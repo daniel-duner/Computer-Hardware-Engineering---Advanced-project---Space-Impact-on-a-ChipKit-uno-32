@@ -26,7 +26,7 @@ static void num32asc( char * s, int );
 secCount = 0;
 buttonCount=0;
 projectileCount = 0;
-createProjectileCount = 0;
+createProjectileCount = 0;  
 mapCount = 0;
 createMapCount=0;
 lives = 3;
@@ -36,7 +36,7 @@ spawnEnemyCount = 0;
 
 
 int rand(int mod){
-    return randCount%mod;
+    return (randCount+createProjectileCount)%mod;
 }
 
 
@@ -89,7 +89,7 @@ void user_isr( void )
     secCount++;
     if (secCount= 10){
         secCount =0;
-    };
+    }
     if (randCount == 10) {
         randCount = 0;
     }
@@ -345,29 +345,10 @@ void move_map(void){
     int i,k;
     for (i = 0; i < 144; i++) {
         map[i] = map[i + 1];
-        //map[i+1] = 0;
     }
+    map[143] = 0;
+    
 }
-
-//rör på fienderna
-void move_enemies(){
-    int k,i;
-  /*  for(k=0;k<4;k++) {
-        for (i = 164*k; i < 164+(164*k); i++) {
-            enemies[i] = enemies[i + 1];
-            //enemies[i + 1] = 0;
-        }
-    }*/
-// ihåg skapaa en funktion för enemy placement där vi tar in en array med enmies och kollar place (kanske)
-    if (enemy_placement1[2] == 1){
-        enemy_placement1[0]--;
-    }
-
-
-}
-
-
-//lägger in map i game, så att
 void update_map(void){
     int i,k=0;
     for (i = 128*3; i<128*4;i++) {
@@ -375,17 +356,69 @@ void update_map(void){
         k++;
     }
 }
-void update_enemies(void){
-    int i,j;
-    for (j = 0; j < 4;j++) {
-        for (i = 0+128*j; i < 128+128*j; i++) {
-            game[i] |= enemies[i+16+(32*j)];
+
+//Enemies
+//Ritar ut fiender på en array
+void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]){
+    if (enemyStat[2] == 0) {
+        enemyStat[0] = x;
+        enemyStat[1] = y;
+        enemyStat[2] = 1;
+        int i;
+        for (i = 0; i < arrayLength/2;i++){
+            set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,1,164);
         }
     }
+
 }
+void check_enemy_placement(void){
+       if (enemy_placement1[2] == 1){ 
+           enemy_placement1[0]--;     
+       }                              
+       if (enemy_placement1[0] == 5 ){
+           enemy_placement1[2] = 0;   
+       }
+       if (enemy_placement2[2] == 1){
+          enemy_placement2[0]--;
+      }
+      if (enemy_placement2[0] == 5 ){
+          enemy_placement2[2] = 0;
+      }
+
+
+}
+//rör på fienderna
+void move_enemies(){
+    int i,k;
+
+    for (i=0; i < 4;i++){
+        for(k=0+164*i;k<164+164*i;k++){
+            enemies[k] = enemies[k+1];
+        }
+        enemies[163+(i*164)]=0;
+        //enemies[0+163*i] = 0;
+    }
+    check_enemy_placement();
+
+}
+
+//ritar in enemies på game
+void update_enemies(void){
+    int i,k;
+    for (i = 0; i <4;i++) {
+        for (k = 0 + 128 * i; k < 128 + (128 * i); k++) {
+            game[k] |= enemies[k + 18 + (36 * i)];
+        }
+    }
+
+ }
+
+//lägger in map i game, så att
+
+
 void paint_life(void){
     int i;
- /*   switch(lives){
+ /* switch(lives){
         case 1:
             life[2] = 6;
             life[3] = 6;
@@ -409,41 +442,30 @@ void paint_life(void){
     }
             break;
 
-    }*/
+    }          */
     for (i = 0; i < 10;i++){
         game[i] |= life[i];
-    }
+    }        
 }
 
-
-//Enemies
-//Ritar ut fiender på en array
-void create_enemy(int x, int y, int character[], int arrayLength, int enemyArr[]){ //new ALL CLEAR
-    if(enemyArr[2] ==0) {
-        int i;
-        enemyArr[0] = x;
-        enemyArr[1] = y;
-        enemyArr[2] = 1;
-        /*
-        for (i = 0; i < arrayLength/2;i++) {
-            set_coordinate((character[i]),(character[i+arrayLength/2]), enemies,0);
-        }*/
-        for (i = 0; i < arrayLength / 2; i++) {
-            set_coordinate((x + character[i]), (y + character[i + (arrayLength / 2)]), enemies, 1, 164);
-        }
+void run_enemies(void){
+    if (spawnEnemyCount == 900){
+        create_enemy(150,18,TIE1,32,enemy_placement1);
+        create_enemy(150,8,TIE1,32,enemy_placement2);
+        spawnEnemyCount = 0;
     }
+    spawnEnemyCount++;
 }
 
-
-/*
-int get_coordinate(int x, int y){
+int get_coordinate(int x, int y) {
     int coordinate;
     short part = 0;
     if (y > 0) {
         part = y / 8;
-    coordinate = (int)part*128+x;
-    return coordinate;
-}*/
+        coordinate = (int) part * 128 + x;
+        return coordinate;
+    }
+}
 // ritar ut skeppet, utgår ifrån en skeppets tidigare koordinat
 void move(int x, int y, int array[], int arrayLength){
     int i;
@@ -503,8 +525,10 @@ void create_projectile(int startX, int startY, int faction){
 void run_map(void){
    if (mapCount == 15){
         move_map();
-        move_enemies();
         mapCount=0;
+    }
+    if (mapCount == 5 || mapCount == 10){
+        move_enemies();
     }
     mapCount++;
     if(createMapCount == 300){
@@ -514,15 +538,7 @@ void run_map(void){
     createMapCount++;
 
 }
-void run_enemies(void){
-    if (createMapCount == 300) {
-        spawnEnemyCount++;
-    }
-        if (spawnEnemyCount == 3) {
-            create_enemy(150, 16, TIE1, 32, enemy_placement1);
-            spawnEnemyCount = 0;
-        }
-}
+
 //uppdaterar projektil karta efter knapptryck, samt gör att den rör sig
 void run_projectile(void){
     if(projectileCount == 10){

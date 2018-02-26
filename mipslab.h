@@ -32,11 +32,18 @@ void update_map(void);
 void paint_life(void);
 
 //Enemies
-void create_enemy(int x, int y, int array[], int arrayLength,int enemyArr[]);  //new
+void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]);  //new
 void update_enemies(void);
 void spawn_enemy(void);
 
 
+
+//
+extern int gamecount;       //count for spawning enemies NEW
+extern int number_of_enemies;
+extern int TIE1_alive;
+extern int pause;
+extern int spawnEnemyCount;
 
 
 //counters
@@ -48,17 +55,8 @@ extern int buttonCount;
 extern int secCount;
 extern int createMapCount;
 extern int randCount;
-extern int spawnEnemyCount;
 
-//
-extern int gamecount;       //count for spawning enemies NEW
-extern int number_of_enemies;
-extern int TIE1_alive;
-extern int TIE2_alive;
-extern int TIE3_alive;
-extern int TIE4_alive;
-extern int TIE5_alive;
-extern int pause;
+
 
 
 void run_projectile(void);
@@ -104,7 +102,8 @@ extern uint8_t enemies[4*164];
 extern int TIE1[32]; //new
 // [0] = x coord, [1] = y-coord, [2] = om 1 alive om 0 död
 extern int enemy_placement1[3];
-
+extern int enemy_placement2[3];
+void check_enemy_placement(void);
 
 
 
