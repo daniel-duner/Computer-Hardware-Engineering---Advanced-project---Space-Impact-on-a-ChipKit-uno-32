@@ -425,14 +425,29 @@ void update_map(void){
 //Enemies
 //Ritar ut fiender på en array
 void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]){
-    if (enemyStat[2] == 0) {
-        enemyStat[0] = x;
-        enemyStat[1] = y;
-        enemyStat[2] = 1;
-        enemyStat[3] = 1;
+    enemyStat[0] = x;
+    enemyStat[1] = y;
+    enemyStat[2] = 1;
+    enemyStat[3] = 1;
+    int i;
+    for (i = 0; i < arrayLength/2;i++){
+        set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,1,164);
+    }
+
+
+}
+void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
+    enemyStat[0] -=1;
+    if (enemyStat[0] == 5){
+        enemyStat[2] = 0;
+    }
+    if(enemyStat[2] == 1) {
         int i;
-        for (i = 0; i < arrayLength/2;i++){
-            set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,1,164);
+        for (i = 0; i < arrayLength / 2; i++) {
+            set_coordinate(enemyStat[0]-1 + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 0, 164);
+        }
+        for (i = 0; i < arrayLength / 2; i++) {
+            set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 1, 164);
         }
     }
 
@@ -440,16 +455,18 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
 
 void kill_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]){
         int i;
-        //stopMove=1;
+        stopMove=1;
         //for (i = 0; i < arrayLength/2;i++){
         //    set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,0,164);
         //}
-      /*  for (i=0; i < 164*4; i++){
-        enemies[i] = 0;
-    }*/
+        //for (i=0; i < 164*4; i++){
+        //enemies[i] = 0;
+   // }
 
-        //stopMove=0;
-        for (i = 0;i < 4;i++){
+        stopMove=0;
+
+
+        for (i = 0;i < 3;i++){
         enemyStat[i] = 0;
     }
 
@@ -675,14 +692,24 @@ void run_Control(void){
 //kollar spawn enemies
 void run_enemies(void){
     if (spawnEnemyCount == 900){
-        create_enemy(150,18,TIE1,32,enemy_placement1);
-        create_enemy(150,8,TIE1,32,enemy_placement2);
+        if (enemy_placement1[2]==0) {
+            create_enemy(150, 18, TIE1, 32, enemy_placement1);
+        }
+        if (enemy_placement2[2]==0) {
+            create_enemy(150, 8, TIE1, 32, enemy_placement2);
+
+        }
         spawnEnemyCount = 0;
     }
     if (moveEnemiesCount == 5){
-        if(stopMove == 0){
-            move_enemies();
-        }
+        //if(stopMove == 0){
+           if(enemy_placement1[2] == 1){
+               move_enemy(TIE1, 32, enemy_placement1);
+           }
+            if(enemy_placement2[2] == 1){
+                move_enemy(TIE1, 32, enemy_placement2);
+            }
+       // }
         dmg(projectiles,enemy_placement1,TIE1,32);
         dmg(projectiles,enemy_placement2,TIE1,32);
         moveEnemiesCount=0;

@@ -68,6 +68,7 @@ void run_projectile(void);
 void run_control(void);
 void run_map(void);
 void run_enemies(void);
+void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]);
 
 /* Declare lab-related functions from mipslabfunc.c */
 char * itoaconv( int num );

@@ -22,6 +22,7 @@ int main(void) {
             display_init();
             labinit(); /* Do any lab-specific initialization */
    while(1){
+       run_map();
         display_string(0, "--Space Impact--");
         display_string(1, "    To start");
         display_string(2, "Press any button");
@@ -33,6 +34,7 @@ int main(void) {
     clear_game();
 
     while(1){
+        run_map();
         int i;
         for(i = 0; i < 58;i++){
             game[i] = select_ship[i];
