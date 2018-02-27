@@ -30,6 +30,20 @@ int main(void) {
             break;
         }
     }
+    clear_game();
+
+    while(1){
+        display_string(0, "Select a ship");
+        display_string(1, "");
+        display_string(2, "");
+        display_game(game);
+        display_update();
+        select_menu();
+        if ((getbtns() & 0x1) == 1) {
+            break;
+        }
+    }
+
 
     run_map();
 
@@ -43,8 +57,9 @@ int main(void) {
     while(1) {
         run_map();
         run_projectile();
-        run_Control();
         run_enemies();
+        run_Control();
+
 
         clr_game();
         update_enemies();

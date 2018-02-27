@@ -36,7 +36,10 @@ moveEnemiesCount = 0;
 stopMove=0;
 
 
-
+/*
+ * returns a semi-random number depends on counters
+ * parameter is the amount of random numbmbers 2 equals 0,1 as returns
+ */
 int rand(int mod){
     int random = (randCount+createProjectileCount)%mod;
     randCount = 0;
@@ -87,6 +90,12 @@ void tick( unsigned int * timep )
 
   * timep = t; /* Store new value */
 }
+
+
+
+
+
+
 void user_isr( void )
 {
     IFS(0)=0;
@@ -160,6 +169,50 @@ void display_init(void) {
 	
 	spi_send_recv(0xAF);
 }
+//initializes everything that was in main;
+void set_init(void){
+    /*
+   This will set the peripheral bus clock to the same frequency
+   as the sysclock. That means 80 MHz, when the microcontroller
+   is running at 80 MHz. Changed 2017, as recommended by Axel.
+ */
+    SYSKEY = 0xAA996655;  /* Unlock OSCCON, step 1 */
+    SYSKEY = 0x556699AA;  /* Unlock OSCCON, step 2 */
+    while(OSCCON & (1 << 21)); /* Wait until PBDIV ready */
+    OSCCONCLR = 0x180000; /* clear PBDIV bit <0,1> */
+    while(OSCCON & (1 << 21));  /* Wait until PBDIV ready */
+    SYSKEY = 0x0;  /* Lock OSCCON */
+
+    /* Set up output pins */
+    AD1PCFG = 0xFFFF;
+    ODCE = 0x0;
+    TRISECLR = 0xFF;
+    PORTE = 0x0;
+
+    /* Output pins for display signals */
+    PORTF = 0xFFFF;
+    PORTG = (1 << 9);
+    ODCF = 0x0;
+    ODCG = 0x0;
+    TRISFCLR = 0x70;
+    TRISGCLR = 0x200;
+
+    /* Set up input pins */
+    TRISDSET = (1 << 8);
+    TRISFSET = (1 << 1);
+
+    /* Set up SPI as master */
+    SPI2CON = 0;
+    SPI2BRG = 4;
+    /* SPI2STAT bit SPIROV = 0; */
+    SPI2STATCLR = 0x40;
+    /* SPI2CON bit CKP = 1; */
+    SPI2CONSET = 0x40;
+    /* SPI2CON bit MSTEN = 1; */
+    SPI2CONSET = 0x20;
+    /* SPI2CON bit ON = 1; */
+    SPI2CONSET = 0x8000;
+}
 
 void display_string(int line, char *s) {
 	int i;
@@ -219,11 +272,17 @@ void display_update(void) {
     }
 }
 
+
+
+
+
+
+
 //light up the game "board" on the screen
 void display_game(uint8_t array[]) {
     int i, j;
 
-    for(i = 0; i < 4; i++) {
+    for(i = 1; i < 4; i++) {
         DISPLAY_CHANGE_TO_COMMAND_MODE;
 
         spi_send_recv(0x22);
@@ -235,10 +294,9 @@ void display_game(uint8_t array[]) {
         DISPLAY_CHANGE_TO_DATA_MODE;
 
         for(j = 0; j < 128; j++)
-            spi_send_recv(~array[i*128+j]);
+            spi_send_recv(array[i*128+j]);
     }
 }
-
 //clear the game board "tun on all pixels"
 void clear_game(){
     int i, j;
@@ -259,54 +317,6 @@ void clear_game(){
         }
     }
 }
-
-
-
-/**/
-//initializing
-void set_init(void){
-    /*
-   This will set the peripheral bus clock to the same frequency
-   as the sysclock. That means 80 MHz, when the microcontroller
-   is running at 80 MHz. Changed 2017, as recommended by Axel.
- */
-    SYSKEY = 0xAA996655;  /* Unlock OSCCON, step 1 */
-    SYSKEY = 0x556699AA;  /* Unlock OSCCON, step 2 */
-    while(OSCCON & (1 << 21)); /* Wait until PBDIV ready */
-    OSCCONCLR = 0x180000; /* clear PBDIV bit <0,1> */
-    while(OSCCON & (1 << 21));  /* Wait until PBDIV ready */
-    SYSKEY = 0x0;  /* Lock OSCCON */
-
-    /* Set up output pins */
-    AD1PCFG = 0xFFFF;
-    ODCE = 0x0;
-    TRISECLR = 0xFF;
-    PORTE = 0x0;
-
-    /* Output pins for display signals */
-    PORTF = 0xFFFF;
-    PORTG = (1 << 9);
-    ODCF = 0x0;
-    ODCG = 0x0;
-    TRISFCLR = 0x70;
-    TRISGCLR = 0x200;
-
-    /* Set up input pins */
-    TRISDSET = (1 << 8);
-    TRISFSET = (1 << 1);
-
-    /* Set up SPI as master */
-    SPI2CON = 0;
-    SPI2BRG = 4;
-    /* SPI2STAT bit SPIROV = 0; */
-    SPI2STATCLR = 0x40;
-    /* SPI2CON bit CKP = 1; */
-    SPI2CONSET = 0x40;
-    /* SPI2CON bit MSTEN = 1; */
-    SPI2CONSET = 0x20;
-    /* SPI2CON bit ON = 1; */
-    SPI2CONSET = 0x8000;
-}
 //clear the game board "set the game array to 0"
 void clr_game(){
     int i = 0;
@@ -314,6 +324,51 @@ void clr_game(){
         game[i] = 0;
     }
 }
+
+void select_menu(void){
+    int i;
+    if(buttonCount < 100) {
+        buttonCount= 100;
+        //move up button 2
+        if ((getbtns() & 0x2) == 2) {
+            set_coordinate(5,24,game,0,128);
+            set_coordinate(6,24,game,0,128);
+            set_coordinate(5,25,game,0,128);
+            set_coordinate(6,25,game,0,128);
+            set_coordinate(5,14,game,1,128);
+            set_coordinate(6,14,game,1,128);
+            set_coordinate(5,15,game,1,128);
+            set_coordinate(6,15,game,1,128);
+            for (i = 0; i < 22; i++){
+                shipChoice[i] = ship[i];
+            }
+        }
+        //move down button 3
+        if ((getbtns() & 0x4)) {
+            {
+                set_coordinate(5,14,game,0,128);
+                set_coordinate(6,14,game,0,128);
+                set_coordinate(5,15,game,0,128);
+                set_coordinate(6,15,game,0,128);
+                set_coordinate(5,24,game,1,128);
+                set_coordinate(6,24,game,1,128);
+                set_coordinate(5,25,game,1,128);
+                set_coordinate(6,25,game,1,128);
+                for (i = 0; i < 22; i++){
+                    shipChoice[i] = ship_2[i];
+                }
+
+            }
+        }
+    }
+    buttonCount++;
+    if (buttonCount== 110){
+        buttonCount = 0;
+    }
+
+
+}
+
 //skapar kartan i map arrayen, lägger till ett max 16 punkter längst bort
 void paint_map(void){
     int i,k,r;
@@ -385,15 +440,18 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
 
 void kill_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]){
         int i;
-        stopMove=1;
-        for (i = 0; i < arrayLength/2;i++){
-            set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,0,164);
-        }
-        stopMove=0;
-    enemyStat[0] = 0;
-    enemyStat[1] = 0;
-    enemyStat[2] = 0;
-    enemyStat[3] = 0;
+        //stopMove=1;
+        //for (i = 0; i < arrayLength/2;i++){
+        //    set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,0,164);
+        //}
+      /*  for (i=0; i < 164*4; i++){
+        enemies[i] = 0;
+    }*/
+
+        //stopMove=0;
+        for (i = 0;i < 4;i++){
+        enemyStat[i] = 0;
+    }
 
 
 }
@@ -488,7 +546,7 @@ void paint_life(void){
 }
 
 
-
+//kollar en given coordinat, på en give array ich returnerar värdet 1 eller 0 beroende på om pixeln är av eller på
 int get_coordinate(int x, int y, uint8_t arr[], int arraySize) {
     int coordinate;
     short part = 0;
@@ -561,21 +619,12 @@ void run_map(void){
         move_map();
         mapCount=0;
     }
-    if (moveEnemiesCount == 5){
-        if(stopMove == 0){
-            move_enemies();
-        }
-        dmg(projectiles,enemy_placement1,TIE1,32);
-        dmg(projectiles,enemy_placement2,TIE1,32);
-        moveEnemiesCount=0;
-    }
     mapCount++;
     if(createMapCount == 300){
         paint_map();
         createMapCount=0;
     }
     createMapCount++;
-    moveEnemiesCount++;
 
 }
 
@@ -630,6 +679,15 @@ void run_enemies(void){
         create_enemy(150,8,TIE1,32,enemy_placement2);
         spawnEnemyCount = 0;
     }
+    if (moveEnemiesCount == 5){
+        if(stopMove == 0){
+            move_enemies();
+        }
+        dmg(projectiles,enemy_placement1,TIE1,32);
+        dmg(projectiles,enemy_placement2,TIE1,32);
+        moveEnemiesCount=0;
+    }
+    moveEnemiesCount++;
     spawnEnemyCount++;
 }
 

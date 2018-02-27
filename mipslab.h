@@ -48,6 +48,7 @@ extern int pause;
 extern int spawnEnemyCount;
 
 
+
 //counters
 extern int commandCount;
 extern int projectileCount;
@@ -96,11 +97,14 @@ extern uint8_t projectiles[128*4];
 extern uint8_t font[128*8];
 extern uint8_t life[10];
 extern int ship[22];
+extern int shipChoice[22];
 extern uint8_t cloud_1[13];
 extern uint8_t cloud_2[7];
 extern uint8_t cloud_3[13];
 extern uint8_t cloud_4[16];
 extern int lives;
+extern uint8_t select_ship[58];
+
 
 extern uint8_t enemies[4*164];
 extern int TIE1[32]; //new
@@ -110,7 +114,7 @@ extern int enemy_placement2[4];
 void check_enemy_placement(void);
 void dmg(uint8_t dealer[], uint8_t receiver[], int character[], int characterLength);
 void kill_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]);
-
+void select_menu(void);
 
 
 //void start_random_counter(void);
