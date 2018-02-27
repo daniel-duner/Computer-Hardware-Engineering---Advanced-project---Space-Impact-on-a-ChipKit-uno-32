@@ -97,6 +97,7 @@ extern uint8_t projectiles[128*4];
 extern uint8_t font[128*8];
 extern uint8_t life[10];
 extern int ship[22];
+extern int ship2[22];
 extern int shipChoice[22];
 extern uint8_t cloud_1[13];
 extern uint8_t cloud_2[7];

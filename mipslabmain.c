@@ -33,12 +33,12 @@ int main(void) {
     clear_game();
 
     while(1){
-        display_string(0, "Select a ship");
-        display_string(1, "");
-        display_string(2, "");
-        display_game(game);
-        display_update();
+        int i;
+        for(i = 0; i < 58;i++){
+            game[i] = select_ship[i];
+        }
         select_menu();
+        display_game(game);
         if ((getbtns() & 0x1) == 1) {
             break;
         }
@@ -65,7 +65,7 @@ int main(void) {
         update_enemies();
         paint_life();
         update_map();
-        move(ship_placementX,ship_placementY,ship,22);
+        move(ship_placementX,ship_placementY,shipChoice,22);
         update_game(projectiles);
         display_image(game);
        }

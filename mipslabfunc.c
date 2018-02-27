@@ -282,7 +282,7 @@ void display_update(void) {
 void display_game(uint8_t array[]) {
     int i, j;
 
-    for(i = 1; i < 4; i++) {
+    for(i = 0; i < 4; i++) {
         DISPLAY_CHANGE_TO_COMMAND_MODE;
 
         spi_send_recv(0x22);
@@ -355,7 +355,7 @@ void select_menu(void){
                 set_coordinate(5,25,game,1,128);
                 set_coordinate(6,25,game,1,128);
                 for (i = 0; i < 22; i++){
-                    shipChoice[i] = ship_2[i];
+                    shipChoice[i] = ship2[i];
                 }
 
             }
@@ -572,7 +572,7 @@ void move(int x, int y, int array[], int arrayLength){
 }
 // sätter skeppets start position
 void start_pos(void){
-    move(4,16,ship,22);
+    move(4,16,shipChoice,22);
 }
 //tänder/släcker pixel (koordinatsystem)
 void set_coordinate(int x, int y, uint8_t array[], int setClr, int arraySize){
