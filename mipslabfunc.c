@@ -36,6 +36,7 @@ moveEnemiesCount = 0;
 stopMove=0;
 
 
+
 /*
  * returns a semi-random number depends on counters
  * parameter is the amount of random numbmbers 2 equals 0,1 as returns
@@ -434,6 +435,7 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
 }
 void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
     int i;
+    if(enemyStat[2] == 1){
     for (i = 0; i < arrayLength / 2; i++) {
         set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 0, 164);
     }
@@ -446,23 +448,36 @@ void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
             set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 1, 164);
         }
     }
+    }
+
+    if(enemyStat[2] > 1) {
+        for (i = 0; i < arrayLength / 2; i++) {
+            set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 0, 164);
+        }
+        enemyStat[1]++;
+        for (i = 0; i < arrayLength / 2; i++) {
+            set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 1, 164);
+        }
+        if(enemyStat[2] == 2){
+            enemyStat[1] = 0;
+        }
+    }
 
 }
 
 void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
         int i;
-        stopMove=1;
-        for (int i = 0; ){
-
+     /*   stopMove=1;
+        for (i = 0; i < 164*2; i++ ){
+        enemies[i]=0;
         }
-
-
         stopMove=0;
-
+*/
 
         for (i = 0;i < 3;i++){
         enemyStat[i] = 0;
     }
+    enemyStat[2]= 16;
 
 
 }
@@ -698,10 +713,10 @@ void run_enemies(void){
     }
     if (moveEnemiesCount == 5){
         //if(stopMove == 0){
-           if(enemy_placement1[2] == 1){
+           if(enemy_placement1[2] > 0){
                move_enemy(TIE1, 32, enemy_placement1);
            }
-            if(enemy_placement2[2] == 1){
+            if(enemy_placement2[2] > 0){
                 move_enemy(TIE1, 32, enemy_placement2);
             }
        // }
