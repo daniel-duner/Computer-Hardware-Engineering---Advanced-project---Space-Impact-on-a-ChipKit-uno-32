@@ -418,17 +418,13 @@ void update_map(void){
 
 
 
-
-
-
-
 //Enemies
 //Ritar ut fiender på en array
 void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]){
     enemyStat[0] = x;
     enemyStat[1] = y;
     enemyStat[2] = 1;
-    enemyStat[3] = 1;
+    enemyStat[3] = 6;
     int i;
     for (i = 0; i < arrayLength/2;i++){
         set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,1,164);
@@ -453,15 +449,13 @@ void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
 
 }
 
-void kill_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]){
+void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
         int i;
         stopMove=1;
-        //for (i = 0; i < arrayLength/2;i++){
-        //    set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,0,164);
-        //}
-        //for (i=0; i < 164*4; i++){
-        //enemies[i] = 0;
-   // }
+        for (int i = 0; ){
+
+        }
+
 
         stopMove=0;
 
@@ -489,8 +483,8 @@ void check_enemy_placement(void){
 
 
 }
-//rör på fienderna
-void move_enemies(){
+//rör på fienderna ANVÄNDS INTE ATM
+/*void move_enemies(){
     int i,k;
 
     for (i=0; i < 4;i++){
@@ -502,7 +496,7 @@ void move_enemies(){
     }
     check_enemy_placement();
 
-}
+}*/
 
 //ritar in enemies på game
 void update_enemies(void){
@@ -518,14 +512,15 @@ void update_enemies(void){
 //lägger in map i game, så att
 
 
-void dmg(uint8_t dealer[], uint8_t receiver[], int character[], int characterLength){
+void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength){
     if(get_coordinate(receiver[0],receiver[1],dealer,128) == 1){
         receiver[3]--;
+        // tar in x och y värde från receiver kollar koordinaterna för dealer sätter den till 0
         set_coordinate(receiver[0],receiver[1],dealer,0,128);
-        set_coordinate(receiver[0]-1,receiver[1]-1,dealer,0,128);
+        set_coordinate(receiver[0],receiver[1],dealer,0,128);
     }
     if(receiver[3] == 0){
-        kill_enemy(receiver[0],receiver[1],character,characterLength,enemies);
+        kill_enemy(character,characterLength,receiver);
     }
 }
 

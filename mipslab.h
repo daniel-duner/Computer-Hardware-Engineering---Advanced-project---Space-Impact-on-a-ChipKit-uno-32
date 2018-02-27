@@ -114,8 +114,8 @@ extern int TIE1[32]; //new
 extern int enemy_placement1[4];
 extern int enemy_placement2[4];
 void check_enemy_placement(void);
-void dmg(uint8_t dealer[], uint8_t receiver[], int character[], int characterLength);
-void kill_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]);
+void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength);
+void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]);
 void select_menu(void);
 
 
