@@ -110,6 +110,7 @@ extern int lives;
 extern uint8_t select_ship[58];
 extern uint8_t numbers[30];
 void update_score(void);
+void menu_ship(int x, int y, int show[], int remove[]);
 
 
 extern uint8_t enemies[4*164];

@@ -379,8 +379,6 @@ void select_menu(void){
     if(buttonCount < 100) {
         buttonCount= 100;
         //move up button 2
-        move(30,14,ship,22);
-        move(30,24,ship2,22);
         if ((getbtns() & 0x2) == 2) {
             set_coordinate(5,24,game,0,128);
             set_coordinate(6,24,game,0,128);
@@ -390,6 +388,7 @@ void select_menu(void){
             set_coordinate(6,14,game,1,128);
             set_coordinate(5,15,game,1,128);
             set_coordinate(6,15,game,1,128);
+            menu_ship(30, 14, ship, ship2);
             for (i = 0; i < 22; i++){
                 shipChoice[i] = ship[i];
             }
@@ -405,6 +404,7 @@ void select_menu(void){
                 set_coordinate(6,24,game,1,128);
                 set_coordinate(5,25,game,1,128);
                 set_coordinate(6,25,game,1,128);
+                menu_ship(30, 24, ship2, ship);
                 for (i = 0; i < 22; i++){
                     shipChoice[i] = ship2[i];
                 }
@@ -475,7 +475,7 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
     enemyStat[0] = x;
     enemyStat[1] = y;
     enemyStat[2] = 1;
-    enemyStat[3] = 4;
+    enemyStat[3] = 10;
     int i;
     for (i = 0; i < arrayLength/2;i++){
         set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,1,164);
@@ -632,7 +632,17 @@ void paint_life(void){
     }        
 }
 
-
+void menu_ship(int x, int y, int show[], int remove[]){
+    int i;
+    for (i = 0; i < 11;i++) {
+        set_coordinate((ship_placementX+remove[i]),(ship_placementY+remove[i+11]), game,0, 128);
+    }
+    ship_placementX = x;
+    ship_placementY = y;
+    for (i = 0; i < 11;i++){
+        set_coordinate((x+show[i]),(y+show[i+(11)]),game,1, 128);
+    }
+}
 //kollar en given coordinat, på en give array ich returnerar värdet 1 eller 0 beroende på om pixeln är av eller på
 int get_coordinate(int x, int y, uint8_t arr[], int arraySize) {
     int coordinate;
