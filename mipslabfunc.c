@@ -34,28 +34,31 @@ randCount = 0;
 spawnEnemyCount = 0;
 moveEnemiesCount = 0;
 stopMove=0;
-points= 0;
+points = 0;
+
 void update_score(void){
-        int i;
+        int i,j;
+        j=0;
         if(points < 10) {
             for (i = points * 3; i < 3 + 3 * points; i++) {
-                game[i + 120] |= numbers[i];
+                game[120+j] |= numbers[i];
+                j++;
             }
+            j=0;
         for(i = 0; i < 3;i++){
-             game[i+116] |= numbers[i];
+             game[116+j] |= numbers[i];
+            j++;
             }
         }
-
-
-        
-
 
         if(points > 10 && points < 20) {
-        for (i = points * 3; i < 3 + 3 * points; i++) {
-            game[i + 120] |= numbers[i];
+            j=0;
+        for (i = (points * 3)-30; i < 3 + (3 * points)-30; i++) {
+            game[j + 120] |= numbers[i];
         }
+            j=0;
         for(i = 3; i < 6;i++){
-            game[i+116] |= numbers[i];
+            game[j+116] |= numbers[i];
         }
     }
 }
@@ -482,6 +485,7 @@ void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
         if(enemy_placement1[2] == 0)
         for (i = 164*2; i < 164*3; i++ ) {
             enemies[i] = 0;
+
         }
         if(enemy_placement2[2] == 0)
         for (i = 164; i < 164*2; i++ ) {
@@ -552,6 +556,7 @@ void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength)
     }
     if(receiver[3] == 0){
         kill_enemy(character,characterLength,receiver);
+        points++;   
     }
 }
 

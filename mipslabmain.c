@@ -14,13 +14,13 @@
 int ship_placementY=0;
 int ship_placementX=0;
 int mytime = 0x5957;
+int startMapCount= 0;
 
 int main(void) {
             set_init();
             display_init();
             labinit(); /* Do any lab-specific initialization */
    while(1){
-       run_map();
         display_string(0, "--Space Impact--");
         display_string(1, "    To start");
         display_string(2, "Press any button");
@@ -32,7 +32,6 @@ int main(void) {
     clear_game();
 
     while(1){
-        run_map();
         int i;
         for(i = 0; i < 58;i++){
             game[i] = select_ship[i];
@@ -44,10 +43,15 @@ int main(void) {
         }
     }
 
+    while(startMapCount == 300){
+       run_map();
+        startMapCount++;
+    }
 
     run_map();
 
     clr_game();
+    update_score();
     update_map();
     start_pos();
     update_game(projectiles);
@@ -64,6 +68,7 @@ int main(void) {
         clr_game();
         update_enemies();
         paint_life();
+        update_score();
         update_map();
         move(ship_placementX,ship_placementY,shipChoice,22);
         update_game(projectiles);
