@@ -35,6 +35,7 @@ spawnEnemyCount = 0;
 moveEnemiesCount = 0;
 stopMove=0;
 points = 0;
+dmgCount =0;
 
 void update_score(void){
         int i,j;
@@ -60,6 +61,16 @@ void update_score(void){
         for(i = 3; i < 6;i++){
             game[j+116] |= numbers[i];
         }
+    }
+    if(points > 20) {
+        game[116] |= numbers[6];
+        game[117] |= numbers[7];
+        game[118] |= numbers[8];
+
+        game[120] |= numbers[0];
+        game[121] |= numbers[1];
+        game[122] |= numbers[2];
+
     }
 }
 
@@ -462,6 +473,7 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
 
 
 }
+
 void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
     int i;
     for (i = 0; i < arrayLength / 2; i++) {
@@ -482,19 +494,31 @@ void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
 void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
         int i;
         stopMove=1;
-        if(enemy_placement1[2] == 0)
+        if(enemy_placement1[2] == 0){
+            points++;
         for (i = 164*2; i < 164*3; i++ ) {
             enemies[i] = 0;
 
         }
-        if(enemy_placement2[2] == 0)
-        for (i = 164; i < 164*2; i++ ) {
-            enemies[i] = 0;
+            for (i = 0;i < 3;i++){
+                enemyStat[i] = 0;
+            }
+            enemyStat[3] = 0;
         }
-        stopMove = 0;
-        for (i = 0;i < 3;i++){
-        enemyStat[i] = 0;
+
+        if(enemy_placement2[2] == 0) {
+            points++;
+            for (i = 164; i < 164 * 2; i++) {
+                enemies[i] = 0;
+            }
+
+            for (i = 0;i < 3;i++){
+                enemyStat[i] = 0;
+        }
+            enemyStat[3] = 0;
+
     }
+    stopMove = 0;
    // enemyStat[2]= 0;
 
 
@@ -546,17 +570,24 @@ void update_enemies(void){
 
 
 void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength){
-    if(get_coordinate(receiver[0],receiver[1],dealer,128) == 1){
-        receiver[3]--;
-        // tar in x och y värde från receiver kollar koordinaterna för dealer sätter den till 0
-        set_coordinate(receiver[0],receiver[1],dealer,0,128);
-        set_coordinate(receiver[0]-1,receiver[1],dealer,0,128);
-        set_coordinate(receiver[0]+1,receiver[1],dealer,0,128);
+    int i;
+    for(i = 0; i < 4;i++) {
+        if (get_coordinate(receiver[0], receiver[1]+i, dealer, 128) == 1) {
+            receiver[3]--;
+            // tar in x och y värde från receiver kollar koordinaterna för dealer sätter den till 0
+            set_coordinate(receiver[0], receiver[1]+i, dealer, 0, 128);
+            set_coordinate(receiver[0] - 1, receiver[1]+i, dealer, 0, 128);
+            set_coordinate(receiver[0] + 1, receiver[1]+i, dealer, 0, 128);
 
+        }
     }
-    if(receiver[3] == 0){
+
+    if(receiver[3] == 0 && dmgCount == 0){
+        dmgCount = 1;
+        receiver[2] = 0;
         kill_enemy(character,characterLength,receiver);
-        points++;   
+        update_score();
+        dmgCount = 0;
     }
 }
 

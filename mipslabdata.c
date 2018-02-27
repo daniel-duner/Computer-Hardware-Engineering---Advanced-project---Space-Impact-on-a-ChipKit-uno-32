@@ -21,8 +21,8 @@ int ship2[] = {2,3,1,2,4,1,2,3,4,5,6,0,0,1,1,1,2,2,2,2,2,2}; //not yet
 int TIE1[] = {0,5,0,2,3,5,0,1,4,5,0,2,3,5,0,5,//32
               0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4};
 uint8_t enemies[164*4]={0}; // First enemy
-int enemy_placement1[4]={0};
-int enemy_placement2[4]={0};
+int enemy_placement1[4]={0,0,0,4};
+int enemy_placement2[4]={0,0,0,4};
 int shipChoice[22];
 
 uint8_t select_ship[58]={0,0,70,137,145,98,0,112,168,168,48,0,255,0,112,168,168,48,0,112,136,136,0,8,124,136,64,0,0,

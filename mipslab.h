@@ -18,6 +18,7 @@ void test(void);
 void set_coordinate(int x, int y, uint8_t array[], int setClr, int arraySize);
 int get_coordinate(int x, int y, uint8_t arr[], int arraySize);
 
+
 uint8_t spi_send_recv(uint8_t data);
 
 void clear_game(void);
@@ -60,6 +61,7 @@ extern int createMapCount;
 extern int randCount;
 extern int moveEnemiesCount;
 extern int stopMove;
+extern int dmgCount;
 
 
 
