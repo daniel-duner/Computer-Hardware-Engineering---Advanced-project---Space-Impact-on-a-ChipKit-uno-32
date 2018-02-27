@@ -34,7 +34,31 @@ randCount = 0;
 spawnEnemyCount = 0;
 moveEnemiesCount = 0;
 stopMove=0;
+points= 0;
+void update_score(void){
+        int i;
+        if(points < 10) {
+            for (i = points * 3; i < 3 + 3 * points; i++) {
+                game[i + 120] |= numbers[i];
+            }
+        for(i = 0; i < 3;i++){
+             game[i+116] |= numbers[i];
+            }
+        }
 
+
+        
+
+
+        if(points > 10 && points < 20) {
+        for (i = points * 3; i < 3 + 3 * points; i++) {
+            game[i + 120] |= numbers[i];
+        }
+        for(i = 3; i < 6;i++){
+            game[i+116] |= numbers[i];
+        }
+    }
+}
 
 
 /*
@@ -331,6 +355,8 @@ void select_menu(void){
     if(buttonCount < 100) {
         buttonCount= 100;
         //move up button 2
+        move(30,14,ship,22);
+        move(30,24,ship2,22);
         if ((getbtns() & 0x2) == 2) {
             set_coordinate(5,24,game,0,128);
             set_coordinate(6,24,game,0,128);
@@ -425,7 +451,7 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
     enemyStat[0] = x;
     enemyStat[1] = y;
     enemyStat[2] = 1;
-    enemyStat[3] = 6;
+    enemyStat[3] = 4;
     int i;
     for (i = 0; i < arrayLength/2;i++){
         set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,1,164);
@@ -454,11 +480,11 @@ void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
         int i;
         stopMove=1;
         if(enemy_placement1[2] == 0)
-        for (i = 0; i < 164*2; i++ ) {
+        for (i = 164*2; i < 164*3; i++ ) {
             enemies[i] = 0;
         }
         if(enemy_placement2[2] == 0)
-        for (i = 0; i < 164*3; i++ ) {
+        for (i = 164; i < 164*2; i++ ) {
             enemies[i] = 0;
         }
         stopMove = 0;
@@ -520,7 +546,9 @@ void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength)
         receiver[3]--;
         // tar in x och y värde från receiver kollar koordinaterna för dealer sätter den till 0
         set_coordinate(receiver[0],receiver[1],dealer,0,128);
-        set_coordinate(receiver[0],receiver[1],dealer,0,128);
+        set_coordinate(receiver[0]-1,receiver[1],dealer,0,128);
+        set_coordinate(receiver[0]+1,receiver[1],dealer,0,128);
+
     }
     if(receiver[3] == 0){
         kill_enemy(character,characterLength,receiver);
@@ -689,7 +717,7 @@ void run_Control(void){
 
 //kollar spawn enemies
 void run_enemies(void){
-    if (spawnEnemyCount == 900){
+    if (spawnEnemyCount == 500){
         if (enemy_placement1[2]==0) {
             create_enemy(150, 18, TIE1, 32, enemy_placement1);
         }

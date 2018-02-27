@@ -15,8 +15,6 @@ int ship_placementY=0;
 int ship_placementX=0;
 int mytime = 0x5957;
 
-
-
 int main(void) {
             set_init();
             display_init();
@@ -27,7 +25,7 @@ int main(void) {
         display_string(1, "    To start");
         display_string(2, "Press any button");
         display_update();
-        if(getbtns()){
+        if(getbtns()& 6){
             break;
         }
     }

@@ -106,6 +106,8 @@ extern uint8_t cloud_3[13];
 extern uint8_t cloud_4[16];
 extern int lives;
 extern uint8_t select_ship[58];
+extern uint8_t numbers[30];
+void update_score(void);
 
 
 extern uint8_t enemies[4*164];
@@ -117,7 +119,7 @@ void check_enemy_placement(void);
 void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength);
 void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]);
 void select_menu(void);
-extern int point;
+extern int points;
 
 //void start_random_counter(void);
 int random(int mod);
