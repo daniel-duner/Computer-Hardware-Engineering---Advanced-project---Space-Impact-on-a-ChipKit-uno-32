@@ -437,15 +437,15 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
 
 }
 void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
+    int i;
+    for (i = 0; i < arrayLength / 2; i++) {
+        set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 0, 164);
+    }
     enemyStat[0] -=1;
     if (enemyStat[0] == 5){
         enemyStat[2] = 0;
     }
     if(enemyStat[2] == 1) {
-        int i;
-        for (i = 0; i < arrayLength / 2; i++) {
-            set_coordinate(enemyStat[0]-1 + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 0, 164);
-        }
         for (i = 0; i < arrayLength / 2; i++) {
             set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 1, 164);
         }
