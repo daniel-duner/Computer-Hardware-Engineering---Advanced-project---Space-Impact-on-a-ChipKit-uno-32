@@ -62,10 +62,20 @@ void update_score(void){
             game[j+116] |= numbers[i];
         }
     }
-    if(points > 20) {
-        game[116] |= numbers[6];
-        game[117] |= numbers[7];
-        game[118] |= numbers[8];
+    if(points > 20 && points < 30) {
+        j=0;
+        for (i = (points * 3)-60; i < 3 + (3 * points)-60; i++) {
+            game[j + 120] |= numbers[i];
+        }
+        j=0;
+        for(i = 6; i < 9;i++){
+            game[j+116] |= numbers[i];
+        }
+    }
+    if(points > 30) {
+        game[116] |= numbers[9];
+        game[117] |= numbers[10];
+        game[118] |= numbers[11];
 
         game[120] |= numbers[0];
         game[121] |= numbers[1];
@@ -493,7 +503,6 @@ void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
 
 void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
         int i;
-        stopMove=1;
         if(enemy_placement1[2] == 0){
             points++;
         for (i = 164*2; i < 164*3; i++ ) {
@@ -518,7 +527,6 @@ void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
             enemyStat[3] = 0;
 
     }
-    stopMove = 0;
    // enemyStat[2]= 0;
 
 
