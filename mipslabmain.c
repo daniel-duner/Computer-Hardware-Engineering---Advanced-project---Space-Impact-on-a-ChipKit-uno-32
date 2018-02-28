@@ -34,8 +34,8 @@ int main(void) {
         update_score();
         update_map();
         start_pos();
-        update_game(projectiles);
         display_image(game);
+        update_game(projectiles);
         while (startMapCount == 900) {
             run_map();
             startMapCount++;

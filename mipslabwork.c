@@ -39,9 +39,10 @@ void labinit( void )
 {
     PORTD = PORTD | 0x00000070;
     TRISD |= (0x3f << 5);
-    volatile int * trise = (volatile int *) 0xbf886100;
-    volatile int * porte = (volatile int *) 0xbf886110;
-    *porte=0;
+    TRISE &= 0x00;
+    //volatile int * trise = (volatile int *) 0xbf886100;
+    //volatile int * porte = (volatile int *) 0xbf886110;
+    //*porte=0;
     PORTD |= (0x7f0);
     T2CONSET = 0x70;
     PR2 = 31250;

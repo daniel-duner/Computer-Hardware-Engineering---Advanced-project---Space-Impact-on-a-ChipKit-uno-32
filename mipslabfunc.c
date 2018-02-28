@@ -339,12 +339,17 @@ void score_board(void){
             scoreCount = 0;
         }
         int i, j, k;
-       for (j = 0; j < 2; j++) {
-            if (highscore[j] < highscore[j + 1]) {
-                int move = highscore[i];
-                highscore[j] = highscore[j + 1];
-                highscore[j + 1] = move;
+
+        for (i = 0; i < 3;i++){
+            int move;
+            for(k = 1;k <3;k++){
+                if(highscore[i] < highscore[k]){
+                    move = highscore[i];
+                    highscore[i] = highscore[k];
+                    highscore[k] = move;
+                }
             }
+
         }
             clr_game();
             while (1) {
@@ -352,27 +357,32 @@ void score_board(void){
                 for (i = 47; i < 35 + 47; i++) {
                     game[i] |= score_text[i - 47];
                 }
+                j=0;
+               /* for(i=0+(3*j);i<3+(3*j);i++){
+                    game[189+(j * 128)] = numbers[i];
+                    j++;
+                }*/
 
                 for (k = 0; k < 3; k++) {
-                    //antalet sekunder och antalet minuter
+                    //antalet ental och antalet titoal
                     int tens = highscore[k] / 10;
                     int ones = highscore[k] % 10;
                     //antalet highscore (var de skrivs ut)
-                    for (i = 0 + k; i < 2 + k; i++) {
-                        //ritar ut sekunder
+
+                        //ritar ut ental
                         j = 0;
                         for (i = 3 * tens; i < 3 + 3 * tens; i++) {
                             game[193 + j + (k * 128)] |= numbers[i];
                             j++;
                         }
-                        //ritar ut minuter
+                        //ritar ut heltal
                         j = 0;
                         for (i = 3 * ones; i < 3 + 3 * ones; i++) {
                             game[198 + j + (k * 128)] |= numbers[i];
                             j++;
                         }
 
-                    }
+
                 }
 
                 display_game(game);
@@ -855,10 +865,12 @@ void run_projectile(void){
         }
     }
     if (createProjectileCount >= 1){
+        TRISE = TRISE << 1 | 1;
         createProjectileCount++;
     }
 
     if (createProjectileCount == 100){
+        TRISE = TRISE >> 1 | 1;
         createProjectileCount = 0;
     }
 }
@@ -886,7 +898,7 @@ void run_Control(void){
 
 //kollar spawn enemies
 void run_enemies(void){
-    if (spawnEnemyCount == 3){
+    if (spawnEnemyCount == 2){
         if (enemy_placement1[2]==0) {
             create_enemy(150, 18, TIE1, 32, enemy_placement1);
         }
@@ -896,7 +908,7 @@ void run_enemies(void){
         }
         spawnEnemyCount = 0;
     }
-    if (moveEnemiesCount == 2) {
+    if (moveEnemiesCount == 3) {
         {
             if (enemy_placement1[2] == 1) {
                 move_enemy(TIE1, 32, enemy_placement1);
@@ -929,7 +941,6 @@ void reset_game(void){
     randCount = 0;
     spawnEnemyCount = -10;
     moveEnemiesCount = 0;
-    points = 0;
     dmgCount =0;
     min = 0;
     sec = 0;
@@ -938,8 +949,8 @@ void reset_game(void){
     ship_placementY=0;
     ship_placementX=0;
     startMapCount= 0;
-    points =0;
     startClock =0;
+    points = 0;
 }
 
 void game_over(void){
