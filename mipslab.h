@@ -67,13 +67,14 @@ extern int secCount;
 extern int createMapCount;
 extern int randCount;
 extern int moveEnemiesCount;
-extern int stopMove;
 extern int dmgCount;
 extern int spawnEnemyCount;
 extern int startMapCount;
+extern int takeLife;
+extern int gameOver;
 
 
-
+void game_over(void);
 
 void run_projectile(void);
 void run_control(void);

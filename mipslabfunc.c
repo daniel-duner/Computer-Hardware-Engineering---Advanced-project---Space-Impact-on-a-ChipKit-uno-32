@@ -23,23 +23,24 @@ static void num32asc( char * s, int );
 
 #define DISPLAY_TURN_OFF_VDD (PORTFSET = 0x40)
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
-secCount = 0;
-buttonCount=0;
-projectileCount = 0;
-createProjectileCount = 0;
-mapCount = 0;
-createMapCount=0;
-lives = 3;
-randCount = 0;
-spawnEnemyCount = 0;
-moveEnemiesCount = 0;
-stopMove=0;
-points = 0;
-dmgCount =0;
-min = 0;
-sec = 0;
-startClock=0;
-scoreCount=0;
+int secCount = 0;
+int buttonCount=0;
+int projectileCount = 0;
+int createProjectileCount = 0;
+int mapCount = 0;
+int createMapCount=0;
+int lives = 3;
+int randCount = 0;
+int spawnEnemyCount = -10;
+int moveEnemiesCount = 0;
+int points = 0;
+int dmgCount =0;
+int min = 0;
+int sec = 0;
+int startClock=0;
+int scoreCount=0;
+int takeLife = 0;
+int gameOver = 1;
 
 
 
@@ -85,8 +86,8 @@ void game_clock(void){
         j++;
     }
 }
-end_game(void){
-    if(sec > 20){
+void end_game(void){
+    if(sec > 30 || lives == 0){
         end = 0;
     }
 }
@@ -316,8 +317,11 @@ void user_isr( void ) {
     secCount++;
     end_game();
     if (secCount== 10 && end!=0){
-        sec++;
+        if(spawnEnemyCount >= 0){
+            sec++;
+        }
         secCount = 0;
+        spawnEnemyCount++;
     }
     if (randCount == 10) {
         randCount = 0;
@@ -325,7 +329,6 @@ void user_isr( void ) {
     randCount++;
     return;
 }
-
 
 
 void score_board(void){
@@ -568,7 +571,7 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
     enemyStat[0] = x;
     enemyStat[1] = y;
     enemyStat[2] = 1;
-    enemyStat[3] = 2;
+    enemyStat[3] = 4;
     int i;
     for (i = 0; i < arrayLength/2;i++){
         set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,1,164);
@@ -638,32 +641,44 @@ void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
     }
 }
 
-void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength){
-    int i;
-    for(i = 0; i < 5;i++) {
-        if (get_coordinate(receiver[0]-18, receiver[1]+i, dealer, 128) == 1) {
-            if (receiver[3] != 0){
+void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength) {
+    int i, j;
+    for (i = 0; i < 5; i++) {
+        if (get_coordinate(receiver[0] - 18, receiver[1] + i, dealer, 128) == 1) {
+            if (receiver[3] != 0) {
                 receiver[3]--;
             }
             // tar in x och y värde från receiver kollar koordinaterna för dealer sätter den till 0
-            set_coordinate(receiver[0]-17, receiver[1]+i, dealer, 0, 128);
-            set_coordinate(receiver[0]-18, receiver[1]+i, dealer, 0, 128);
-            set_coordinate(receiver[0]-19, receiver[1]+i, dealer, 0, 128);
+            set_coordinate(receiver[0] - 17, receiver[1] + i, dealer, 0, 128);
+            set_coordinate(receiver[0] - 18, receiver[1] + i, dealer, 0, 128);
+            set_coordinate(receiver[0] - 19, receiver[1] + i, dealer, 0, 128);
         }
     }
 
-    if(receiver[3] == 0){
+    if (receiver[3] == 0) {
         dmgCount = 1;
         receiver[2] = 0;
-        kill_enemy(character,characterLength,receiver);
+        kill_enemy(character, characterLength, receiver);
         update_score();
         dmgCount = 0;
     }
-    for(i = 0; i < 5;i++) {
-        if (ship_placementX == receiver[0] && ship_placementY == receiver[1]+i) {
-           lives--;
-        }
+
+    for (j = 0; j < 11;j++){
+         for (i = 0; i < 5; i++) {
+            if (ship_placementX+18 == receiver[0] && ship_placementY+1 == receiver[1] + i && takeLife == 0) {
+                lives--;
+                if(lives == 0){
+                    gameOver = 0;
+                }
+                end_game();
+                takeLife = 100;
+            }
+         }
     }
+    if(takeLife > 0){
+        takeLife--;
+    }
+
 
 }
 
@@ -726,32 +741,7 @@ void update_enemies(void){
 //visa liv
 void paint_life(void){
     int i;
- /* switch(lives){
-        case 1:
-            life[2] = 6;
-            life[3] = 6;
-            for(i=4;i < 10;i++){
-               life[i] = 0;
-            }
-            break;
-        case 2:
-            for (i =2; i < 7; i=+3) {
-                life[i] = 6;
-                life[i+1] = 6;
-            }
-            for(i=6;i < 10;i++){
-                life[i] = 0;
-            }
-            break;
-        case 3:
-            for (i = 2; i < 11; i=+3) {
-                life[i] = 6;
-                life[i+1] = 6;
-    }
-            break;
-
-    }          */
-    for (i = 0; i < 10;i++){
+    for (i = 0; i < 1+(3*lives);i++){
         game[i] |= life[i];
     }
 }
@@ -896,7 +886,7 @@ void run_Control(void){
 
 //kollar spawn enemies
 void run_enemies(void){
-    if (spawnEnemyCount == 500){
+    if (spawnEnemyCount == 3){
         if (enemy_placement1[2]==0) {
             create_enemy(150, 18, TIE1, 32, enemy_placement1);
         }
@@ -906,23 +896,22 @@ void run_enemies(void){
         }
         spawnEnemyCount = 0;
     }
-    if (moveEnemiesCount == 5){
-        //if(stopMove == 0){
-           if(enemy_placement1[2] == 1){
-               move_enemy(TIE1, 32, enemy_placement1);
-           }
-            if(enemy_placement2[2] == 1){
+    if (moveEnemiesCount == 2) {
+        {
+            if (enemy_placement1[2] == 1) {
+                move_enemy(TIE1, 32, enemy_placement1);
+            }
+            if (enemy_placement2[2] == 1) {
                 move_enemy(TIE1, 32, enemy_placement2);
             }
-       // }
-        dmg(projectiles,enemy_placement1,TIE1,32);
-        dmg(projectiles,enemy_placement2,TIE1,32);
-        moveEnemiesCount=0;
+
+            dmg(projectiles, enemy_placement1, TIE1, 32);
+            dmg(projectiles, enemy_placement2, TIE1, 32);
+            moveEnemiesCount = 0;
+        }
     }
     moveEnemiesCount++;
-    spawnEnemyCount++;
 }
-<<<<<<< HEAD
 // reset game
 void reset_game(void){
     clr_bitmap(enemies,164);
@@ -938,9 +927,8 @@ void reset_game(void){
     createMapCount=0;
     lives = 3;
     randCount = 0;
-    spawnEnemyCount = 0;
+    spawnEnemyCount = -10;
     moveEnemiesCount = 0;
-    stopMove=0;
     points = 0;
     dmgCount =0;
     min = 0;
@@ -954,7 +942,19 @@ void reset_game(void){
     startClock =0;
 }
 
-<<<<<<< HEAD
+void game_over(void){
+    if (gameOver >= 0) {
+        while (1) {
+            display_string(0, "    GAME OVER");
+            display_string(1, "Press any button");
+            display_string(2, "to see highscore");
+            display_update();
+            if (getbtns() & 6) {
+                break;
+            }
+        }
+    }
+}
 
 
 
@@ -972,12 +972,6 @@ void reset_game(void){
 
 
 
-
-=======
->>>>>>> cee739b7cba62c5f9473368b0c373ab3d3fe6f9e
-
-=======
->>>>>>> cee739b7cba62c5f9473368b0c373ab3d3fe6f9e
 /* Helper function, local to this file.
    Converts a number to hexadecimal ASCII digits. */
 static void num32asc( char * s, int n )

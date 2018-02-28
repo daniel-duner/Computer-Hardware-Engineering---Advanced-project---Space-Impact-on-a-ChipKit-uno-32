@@ -16,7 +16,7 @@ int ship_placementY=0;
 int ship_placementX=0;
 int mytime = 0x5957;
 int startMapCount= 0;
-end = 1;
+int end = 1;
 
 int main(void) {
 
@@ -39,6 +39,7 @@ int main(void) {
         while (startMapCount == 900) {
             run_map();
             startMapCount++;
+            display_game(game);
         }
 
         while (end!=0) {
@@ -59,6 +60,7 @@ int main(void) {
             display_image(game);
 
         }
+        game_over();
         score_board();
 
 
