@@ -11,69 +11,59 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 //x värden fram till hälften 11 värden, resten y värden alltså {x1,x2,...y1,y2}
+
 int ship_placementY=0;
 int ship_placementX=0;
 int mytime = 0x5957;
 int startMapCount= 0;
+end = 1;
 
 int main(void) {
-            set_init();
-            display_init();
-            labinit(); /* Do any lab-specific initialization */
-   while(1){
-        display_string(0, "--Space Impact--");
-        display_string(1, "    To start");
-        display_string(2, "Press any button");
-        display_update();
-        if(getbtns()& 6){
-            break;
-        }
-    }
-    clear_game();
-
-    while(1){
-        int i;
-        for(i = 0; i < 58;i++){
-            game[i] = select_ship[i];
-        }
-        select_menu();
-        display_game(game);
-        if ((getbtns() & 0x1) == 1) {
-            break;
-        }
-    }
-
-    while(startMapCount == 300){
-       run_map();
-        startMapCount++;
-    }
-
-    run_map();
-
-    clr_game();
-    update_score();
-    update_map();
-    start_pos();
-    update_game(projectiles);
-    display_image(game);
-    delay(100);
 
     while(1) {
-        run_map();
-        run_projectile();
-        run_enemies();
-        run_Control();
+        set_init();
+        display_init();
+        labinit(); /* Do any lab-specific initialization */
+        intro();
+        clear_game();
+        select_menu();
 
+        run_map();
 
         clr_game();
-        update_enemies();
-        paint_life();
         update_score();
         update_map();
-        move(ship_placementX,ship_placementY,shipChoice,22);
+        start_pos();
         update_game(projectiles);
         display_image(game);
-       }
+        while (startMapCount == 900) {
+            run_map();
+            startMapCount++;
+        }
 
+        while (end!=0) {
+            run_map();
+            run_projectile();
+            run_enemies();
+            run_Control();
+
+
+            clr_game();
+            update_enemies();
+            paint_life();
+            update_score();
+            game_clock();
+            update_map();
+            move(ship_placementX, ship_placementY, shipChoice, 22);
+            update_game(projectiles);
+            display_image(game);
+
+        }
+        score_board();
+
+
+    }
 	return 0;
 }
+
+

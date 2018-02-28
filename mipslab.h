@@ -23,6 +23,7 @@ uint8_t spi_send_recv(uint8_t data);
 
 void clear_game(void);
 void clr_game(void);
+void clr_bitmap(uint8_t arr[], int size);
 extern int ship_placementY;
 extern int ship_placementX;
 void start_pos(void);
@@ -33,20 +34,25 @@ void paint_map(void);
 void move_map(void);
 void update_map(void);
 void paint_life(void);
+void reset_game(void);
 
 //Enemies
 void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]);  //new
 void update_enemies(void);
 void spawn_enemy(void);
 
+extern uint8_t gameTimer[];
+void game_clock(void);
+extern int sec;
+extern int min;
+extern int startClock;
+extern int end;
+void end_game(void);
+void score_board(void);
 
 
-//
-extern int gamecount;       //count for spawning enemies NEW
-extern int number_of_enemies;
-extern int TIE1_alive;
-extern int pause;
-extern int spawnEnemyCount;
+extern int highscore[9];
+extern int scoreCount;
 
 
 
@@ -62,6 +68,8 @@ extern int randCount;
 extern int moveEnemiesCount;
 extern int stopMove;
 extern int dmgCount;
+extern int spawnEnemyCount;
+extern int startMapCount;
 
 
 
@@ -109,9 +117,11 @@ extern uint8_t cloud_4[16];
 extern int lives;
 extern uint8_t select_ship[58];
 extern uint8_t numbers[30];
+extern uint8_t score_text[35];
+
 void update_score(void);
 void menu_ship(int x, int y, int show[], int remove[]);
-
+void intro(void);
 
 extern uint8_t enemies[4*164];
 extern int TIE1[32]; //new

@@ -36,65 +36,86 @@ moveEnemiesCount = 0;
 stopMove=0;
 points = 0;
 dmgCount =0;
+min = 0;
+sec = 0;
+startClock=0;
+scoreCount=0;
 
-void update_score(void){
-        int i,j;
-        j=0;
-        if(points < 10) {
-            for (i = points * 3; i < 3 + 3 * points; i++) {
-                game[120+j] |= numbers[i];
-                j++;
-            }
-            j=0;
-        for(i = 0; i < 3;i++){
-             game[116+j] |= numbers[i];
-            j++;
-            }
-        }
-
-        if(points > 10 && points < 20) {
-            j=0;
-        for (i = (points * 3)-30; i < 3 + (3 * points)-30; i++) {
-            game[j + 120] |= numbers[i];
-        }
-            j=0;
-        for(i = 3; i < 6;i++){
-            game[j+116] |= numbers[i];
-        }
-    }
-    if(points > 20 && points < 30) {
-        j=0;
-        for (i = (points * 3)-60; i < 3 + (3 * points)-60; i++) {
-            game[j + 120] |= numbers[i];
-        }
-        j=0;
-        for(i = 6; i < 9;i++){
-            game[j+116] |= numbers[i];
-        }
-    }
-    if(points > 30) {
-        game[116] |= numbers[9];
-        game[117] |= numbers[10];
-        game[118] |= numbers[11];
-
-        game[120] |= numbers[0];
-        game[121] |= numbers[1];
-        game[122] |= numbers[2];
-
-    }
-}
-
-
-/*
- * returns a semi-random number depends on counters
- * parameter is the amount of random numbmbers 2 equals 0,1 as returns
- */
-int rand(int mod){
-    int random = (randCount+createProjectileCount)%mod;
+void reset_game(void){
+    clr_bitmap(enemies,164);
+    clr_bitmap(projectiles,128);
+    clr_game();
+    secCount = 0;
+    buttonCount=0;
+    projectileCount = 0;
+    createProjectileCount = 0;
+    mapCount = 0;
+    createMapCount=0;
+    lives = 3;
     randCount = 0;
-    return random;
+    spawnEnemyCount = 0;
+    moveEnemiesCount = 0;
+    stopMove=0;
+    points = 0;
+    dmgCount =0;
+    min = 0;
+    sec = 0;
+    startClock=0;
+    end = 1;
+    ship_placementY=0;
+    ship_placementX=0;
+    startMapCount= 0;
+    points =0;
+    startClock =0;
 }
 
+void game_clock(void){
+    if (startClock ==0){
+        sec = 0;
+        min = 0;
+        startClock=1;
+    }
+    if(sec == 59){
+        min++;
+        sec=0;
+    }
+    if(min==59){
+        min = 0;
+    }
+    int i,j,k;
+    k = sec/10;
+    i=0;
+    j=0;
+    for (i = 3*sec-k*30; i < 3+3*sec-k*30; i++) {
+        game[65+j] |= numbers[i];
+        j++;
+    }
+    i=0;
+    j=0;
+    for (i = 3 * k; i < 3 + 3 * k; i++) {
+        game[61+ j] |= numbers[i];
+        j++;
+    }
+    game[59]|= 20;
+    k = min/10;
+    i=0;
+    j=0;
+    for (i = 3*min-k*30; i < 3+3*min-k*30; i++) {
+        game[55+j] |= numbers[i];
+        j++;
+    }
+    i=0;
+    j=0;
+    for (i = 3 * k; i < 3 + 3 * k; i++) {
+        game[51+ j] |= numbers[i];
+        j++;
+    }
+}
+end_game(void){
+    if(sec > 9){
+        end = 0;
+    }
+}
 
 /* TIMER*/
 /* quicksleep:
@@ -140,24 +161,19 @@ void tick( unsigned int * timep )
   * timep = t; /* Store new value */
 }
 
-
-
-
-
-
-void user_isr( void )
-{
-    IFS(0)=0;
-    secCount++;
-    if (secCount= 10){
-        secCount =0;
+void intro(void){
+    while(1){
+        display_string(0, "--Space Impact--");
+        display_string(1, "    To start");
+        display_string(2, "Press any button");
+        display_update();
+        if(getbtns()& 6){
+            break;
+        }
     }
-    if (randCount == 10) {
-        randCount = 0;
-    }
-    randCount++;
-    return;
 }
+
+
 /* display_debug
    A function to help debugging.
 
@@ -321,11 +337,105 @@ void display_update(void) {
     }
 }
 
+void user_isr( void ) {
+    IFS(0)=0;
+    secCount++;
+    if (secCount== 10 && end!=0){
+        sec++;
+        secCount = 0;
+    }
+    if (randCount == 10) {
+        randCount = 0;
+    }
+    randCount++;
+    return;
+}
 
 
 
+void score_board(void){
+    if (end == 0) {
+            highscore[scoreCount] = points;
+            scoreCount++;
+        if (scoreCount == 2) {
+            scoreCount = 0;
+        }
+        int i, j, k;
+       /*for (j = 0; j < 1; j++) {
+            if (highscore[j] < highscore[j + 1]) {
+                int move = highscore[i];
+                highscore[j] = highscore[j + 1];
+                highscore[j + 1] = move;
+            }
+        }*/
+            clr_game();
+            while (1) {
+                //Skriver ut score
+                for (i = 47; i < 35 + 47; i++) {
+                    game[i] |= score_text[i - 47];
+                }
+
+                for (k = 0; k < 2; k++) {
+                    //antalet sekunder och antalet minuter
+                    int tens = highscore[k] / 10;
+                    int ones = highscore[k] % 10;
+                    //antalet highscore (var de skrivs ut)
+                    for (i = 0 + k; i < 2 + k; i++) {
+                        //ritar ut sekunder
+                        j = 0;
+                        for (i = 3 * tens; i < 3 + 3 * tens; i++) {
+                            game[188 + j + (k * 128)] |= numbers[i];
+                            j++;
+                        }
+                        //ritar ut minuter
+                        j = 0;
+                        for (i = 3 * ones; i < 3 + 3 * ones; i++) {
+                            game[183 + j + (k * 128)] |= numbers[i];
+                            j++;
+                        }
 
 
+                    }
+                }
+
+                display_game(game);
+                if (getbtns() & 1) {
+                    reset_game();
+                    break;
+                }
+            }
+
+
+    }
+
+}
+
+/*
+ * returns a semi-random number depends on counters
+ * parameter is the amount of random numbmbers 2 equals 0,1 as returns
+ */
+int rand(int mod){
+    int random = (randCount+createProjectileCount)%mod;
+    randCount = 0;
+    return random;
+}
+
+void update_score(void){
+    int i,j,k;
+    k = points/10;
+    i=0;
+    j=0;
+        for (i = 3*points-k*30; i < 3+3*points-k*30; i++) {
+            game[120+j] |= numbers[i];
+            j++;
+        }
+    i=0;
+    j=0;
+        for (i = 3 * k; i < 3 + 3 * k; i++) {
+            game[116+ j] |= numbers[i];
+            j++;
+        }
+}
 
 //light up the game "board" on the screen
 void display_game(uint8_t array[]) {
@@ -373,50 +483,59 @@ void clr_game(){
         game[i] = 0;
     }
 }
-
+//meny för att välja skepp
 void select_menu(void){
-    int i;
-    if(buttonCount < 100) {
-        buttonCount= 100;
-        //move up button 2
-        if ((getbtns() & 0x2) == 2) {
-            set_coordinate(5,24,game,0,128);
-            set_coordinate(6,24,game,0,128);
-            set_coordinate(5,25,game,0,128);
-            set_coordinate(6,25,game,0,128);
-            set_coordinate(5,14,game,1,128);
-            set_coordinate(6,14,game,1,128);
-            set_coordinate(5,15,game,1,128);
-            set_coordinate(6,15,game,1,128);
-            menu_ship(30, 14, ship, ship2);
-            for (i = 0; i < 22; i++){
-                shipChoice[i] = ship[i];
-            }
+    while(1){
+        int i;
+        for(i = 0; i < 58;i++){
+            game[i] = select_ship[i];
         }
-        //move down button 3
-        if ((getbtns() & 0x4)) {
-            {
-                set_coordinate(5,14,game,0,128);
-                set_coordinate(6,14,game,0,128);
-                set_coordinate(5,15,game,0,128);
-                set_coordinate(6,15,game,0,128);
-                set_coordinate(5,24,game,1,128);
-                set_coordinate(6,24,game,1,128);
-                set_coordinate(5,25,game,1,128);
-                set_coordinate(6,25,game,1,128);
-                menu_ship(30, 24, ship2, ship);
+        if(buttonCount < 100) {
+            buttonCount= 100;
+            //move up button 2
+            if ((getbtns() & 0x2) == 2) {
+                set_coordinate(5,24,game,0,128);
+                set_coordinate(6,24,game,0,128);
+                set_coordinate(5,25,game,0,128);
+                set_coordinate(6,25,game,0,128);
+                set_coordinate(5,14,game,1,128);
+                set_coordinate(6,14,game,1,128);
+                set_coordinate(5,15,game,1,128);
+                set_coordinate(6,15,game,1,128);
+                menu_ship(30, 14, ship, ship2);
                 for (i = 0; i < 22; i++){
-                    shipChoice[i] = ship2[i];
+                    shipChoice[i] = ship[i];
                 }
+            }
+            //move down button 3
+            if ((getbtns() & 0x4)) {
+                {
+                    set_coordinate(5,14,game,0,128);
+                    set_coordinate(6,14,game,0,128);
+                    set_coordinate(5,15,game,0,128);
+                    set_coordinate(6,15,game,0,128);
+                    set_coordinate(5,24,game,1,128);
+                    set_coordinate(6,24,game,1,128);
+                    set_coordinate(5,25,game,1,128);
+                    set_coordinate(6,25,game,1,128);
+                    menu_ship(30, 24, ship2, ship);
+                    for (i = 0; i < 22; i++){
+                        shipChoice[i] = ship2[i];
+                    }
 
+                }
             }
         }
-    }
-    buttonCount++;
-    if (buttonCount== 110){
-        buttonCount = 0;
-    }
+        buttonCount++;
+        if (buttonCount== 110){
+            buttonCount = 0;
+        }
 
+        display_game(game);
+        if ((getbtns() & 0x1) == 1) {
+            break;
+        }
+    }
 
 }
 
@@ -459,6 +578,7 @@ void move_map(void){
     map[143] = 0;
     
 }
+//lägger in map i game, så att
 void update_map(void){
     int i,k=0;
     for (i = 128*3; i<128*4;i++) {
@@ -467,15 +587,13 @@ void update_map(void){
     }
 }
 
-
-
 //Enemies
 //Ritar ut fiender på en array
 void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]){
     enemyStat[0] = x;
     enemyStat[1] = y;
     enemyStat[2] = 1;
-    enemyStat[3] = 10;
+    enemyStat[3] = 1;
     int i;
     for (i = 0; i < arrayLength/2;i++){
         set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,1,164);
@@ -483,6 +601,15 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
 
 
 }
+
+void clr_bitmap(uint8_t arr[], int size){
+    int i;
+    for (i = 0; i < size*4;i++){
+        arr[i] = 0;
+    }
+
+}
+
 
 void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
     int i;
@@ -504,19 +631,18 @@ void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
 void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
         int i;
         if(enemy_placement1[2] == 0){
-            points++;
         for (i = 164*2; i < 164*3; i++ ) {
             enemies[i] = 0;
-
         }
-            for (i = 0;i < 3;i++){
-                enemyStat[i] = 0;
-            }
-            enemyStat[3] = 0;
+        for (i = 0;i < 3;i++){
+            enemyStat[i] = 0;
+        }
+            enemyStat[3] = 6;
+            points++;
+            end_game();
         }
 
         if(enemy_placement2[2] == 0) {
-            points++;
             for (i = 164; i < 164 * 2; i++) {
                 enemies[i] = 0;
             }
@@ -524,27 +650,68 @@ void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
             for (i = 0;i < 3;i++){
                 enemyStat[i] = 0;
         }
-            enemyStat[3] = 0;
-
+            enemyStat[3] = 6;
+            points++;
+            end_game();
     }
-   // enemyStat[2]= 0;
+}
 
+void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength){
+    int i;
+    for(i = 0; i < 5;i++) {
+        if (get_coordinate(receiver[0]-18, receiver[1]+i, dealer, 128) == 1) {
+            if (receiver[3] != 0){
+                receiver[3]--;
+            }
+            // tar in x och y värde från receiver kollar koordinaterna för dealer sätter den till 0
+            set_coordinate(receiver[0]-17, receiver[1]+i, dealer, 0, 128);
+            set_coordinate(receiver[0]-18, receiver[1]+i, dealer, 0, 128);
+            set_coordinate(receiver[0]-19, receiver[1]+i, dealer, 0, 128);
+        }
+    }
+
+    if(receiver[3] == 0){
+        dmgCount = 1;
+        receiver[2] = 0;
+        kill_enemy(character,characterLength,receiver);
+        update_score();
+        dmgCount = 0;
+    }
+    for(i = 0; i < 5;i++) {
+        if (ship_placementX == receiver[0] && ship_placementY == receiver[1]+i) {
+           lives--;
+        }
+    }
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void check_enemy_placement(void){
-       if (enemy_placement1[2] == 1){ 
-           enemy_placement1[0]--;     
-       }                              
-       if (enemy_placement1[0] == 5 ){
-           enemy_placement1[2] = 0;   
-       }
-       if (enemy_placement2[2] == 1){
-          enemy_placement2[0]--;
-      }
-      if (enemy_placement2[0] == 5 ){
-          enemy_placement2[2] = 0;
-      }
+    if (enemy_placement1[2] == 1){
+        enemy_placement1[0]--;
+    }
+    if (enemy_placement1[0] == 5 ){
+        enemy_placement1[2] = 0;
+    }
+    if (enemy_placement2[2] == 1){
+        enemy_placement2[0]--;
+    }
+    if (enemy_placement2[0] == 5 ){
+        enemy_placement2[2] = 0;
+    }
 
 
 }
@@ -572,33 +739,7 @@ void update_enemies(void){
         }
     }
 
- }
-
-//lägger in map i game, så att
-
-
-void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength){
-    int i;
-    for(i = 0; i < 4;i++) {
-        if (get_coordinate(receiver[0], receiver[1]+i, dealer, 128) == 1) {
-            receiver[3]--;
-            // tar in x och y värde från receiver kollar koordinaterna för dealer sätter den till 0
-            set_coordinate(receiver[0], receiver[1]+i, dealer, 0, 128);
-            set_coordinate(receiver[0] - 1, receiver[1]+i, dealer, 0, 128);
-            set_coordinate(receiver[0] + 1, receiver[1]+i, dealer, 0, 128);
-
-        }
-    }
-
-    if(receiver[3] == 0 && dmgCount == 0){
-        dmgCount = 1;
-        receiver[2] = 0;
-        kill_enemy(character,characterLength,receiver);
-        update_score();
-        dmgCount = 0;
-    }
 }
-
 
 void paint_life(void){
     int i;
@@ -727,7 +868,7 @@ void run_map(void){
 
 //uppdaterar projektil karta efter knapptryck, samt gör att den rör sig
 void run_projectile(void){
-    if(projectileCount == 10){
+    if(projectileCount == 5){
         move_projectiles();
         projectileCount=0;
     }
@@ -797,6 +938,27 @@ void run_enemies(void){
     moveEnemiesCount++;
     spawnEnemyCount++;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* Helper function, local to this file.
    Converts a number to hexadecimal ASCII digits. */
