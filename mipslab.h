@@ -23,6 +23,7 @@ uint8_t spi_send_recv(uint8_t data);
 
 void clear_game(void);
 void clr_game(void);
+void clear_bitmap(int arr[], int size);
 void clr_bitmap(uint8_t arr[], int size);
 extern int ship_placementY;
 extern int ship_placementX;

@@ -10,7 +10,7 @@
 
 
 /* Declare a helper function which is local to this file */
-static void num32asc( char * s, int ); 
+static void num32asc( char * s, int );
 
 #define DISPLAY_CHANGE_TO_COMMAND_MODE (PORTFCLR = 0x10)
 #define DISPLAY_CHANGE_TO_DATA_MODE (PORTFSET = 0x10)
@@ -26,7 +26,7 @@ static void num32asc( char * s, int );
 secCount = 0;
 buttonCount=0;
 projectileCount = 0;
-createProjectileCount = 0;  
+createProjectileCount = 0;
 mapCount = 0;
 createMapCount=0;
 lives = 3;
@@ -41,39 +41,13 @@ sec = 0;
 startClock=0;
 scoreCount=0;
 
-void reset_game(void){
-    clr_bitmap(enemies,164);
-    clr_bitmap(projectiles,128);
-    clr_game();
-    secCount = 0;
-    buttonCount=0;
-    projectileCount = 0;
-    createProjectileCount = 0;
-    mapCount = 0;
-    createMapCount=0;
-    lives = 3;
-    randCount = 0;
-    spawnEnemyCount = 0;
-    moveEnemiesCount = 0;
-    stopMove=0;
-    points = 0;
-    dmgCount =0;
-    min = 0;
-    sec = 0;
-    startClock=0;
-    end = 1;
-    ship_placementY=0;
-    ship_placementX=0;
-    startMapCount= 0;
-    points =0;
-    startClock =0;
-}
+
 
 void game_clock(void){
     if (startClock ==0){
         sec = 0;
         min = 0;
-        startClock=1;
+        startClock=1; //initiera klockan
     }
     if(sec == 59){
         min++;
@@ -87,7 +61,7 @@ void game_clock(void){
     i=0;
     j=0;
     for (i = 3*sec-k*30; i < 3+3*sec-k*30; i++) {
-        game[65+j] |= numbers[i];
+        game[65+j] |= numbers[i];       //placera klockan centralt
         j++;
     }
     i=0;
@@ -112,7 +86,7 @@ void game_clock(void){
     }
 }
 end_game(void){
-    if(sec > 9){
+    if(sec > 20){
         end = 0;
     }
 }
@@ -139,7 +113,7 @@ void tick( unsigned int * timep )
   /* Get current value, store locally */
   register unsigned int t = * timep;
   t += 1; /* Increment local copy */
-  
+
   /* If result was not a valid BCD-coded time, adjust now */
 
   if( (t & 0x0000000f) >= 0x0000000a ) t += 0x00000006;
@@ -210,28 +184,28 @@ void display_init(void) {
 	quicksleep(10);
 	DISPLAY_ACTIVATE_VDD;
 	quicksleep(1000000);
-	
+
 	spi_send_recv(0xAE);
 	DISPLAY_ACTIVATE_RESET;
 	quicksleep(10);
 	DISPLAY_DO_NOT_RESET;
 	quicksleep(10);
-	
+
 	spi_send_recv(0x8D);
 	spi_send_recv(0x14);
-	
+
 	spi_send_recv(0xD9);
 	spi_send_recv(0xF1);
-	
+
 	DISPLAY_ACTIVATE_VBAT;
 	quicksleep(10000000);
-	
+
 	spi_send_recv(0xA1);
 	spi_send_recv(0xC8);
-	
+
 	spi_send_recv(0xDA);
 	spi_send_recv(0x20);
-	
+
 	spi_send_recv(0xAF);
 }
 //initializes everything that was in main;
@@ -285,7 +259,7 @@ void display_string(int line, char *s) {
 		return;
 	if(!s)
 		return;
-	
+
 	for(i = 0; i < 16; i++)
 		if(*s) {
 			textbuffer[line][i] = *s;
@@ -340,6 +314,7 @@ void display_update(void) {
 void user_isr( void ) {
     IFS(0)=0;
     secCount++;
+    end_game();
     if (secCount== 10 && end!=0){
         sec++;
         secCount = 0;
@@ -357,17 +332,17 @@ void score_board(void){
     if (end == 0) {
             highscore[scoreCount] = points;
             scoreCount++;
-        if (scoreCount == 2) {
+        if (scoreCount == 3) {
             scoreCount = 0;
         }
         int i, j, k;
-       /*for (j = 0; j < 1; j++) {
+       for (j = 0; j < 2; j++) {
             if (highscore[j] < highscore[j + 1]) {
                 int move = highscore[i];
                 highscore[j] = highscore[j + 1];
                 highscore[j + 1] = move;
             }
-        }*/
+        }
             clr_game();
             while (1) {
                 //Skriver ut score
@@ -375,7 +350,7 @@ void score_board(void){
                     game[i] |= score_text[i - 47];
                 }
 
-                for (k = 0; k < 2; k++) {
+                for (k = 0; k < 3; k++) {
                     //antalet sekunder och antalet minuter
                     int tens = highscore[k] / 10;
                     int ones = highscore[k] % 10;
@@ -384,21 +359,21 @@ void score_board(void){
                         //ritar ut sekunder
                         j = 0;
                         for (i = 3 * tens; i < 3 + 3 * tens; i++) {
-                            game[188 + j + (k * 128)] |= numbers[i];
+                            game[193 + j + (k * 128)] |= numbers[i];
                             j++;
                         }
                         //ritar ut minuter
                         j = 0;
                         for (i = 3 * ones; i < 3 + 3 * ones; i++) {
-                            game[183 + j + (k * 128)] |= numbers[i];
+                            game[198 + j + (k * 128)] |= numbers[i];
                             j++;
                         }
-
 
                     }
                 }
 
                 display_game(game);
+                delay(100);
                 if (getbtns() & 1) {
                     reset_game();
                     break;
@@ -576,7 +551,7 @@ void move_map(void){
         map[i] = map[i + 1];
     }
     map[143] = 0;
-    
+
 }
 //lägger in map i game, så att
 void update_map(void){
@@ -593,7 +568,7 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
     enemyStat[0] = x;
     enemyStat[1] = y;
     enemyStat[2] = 1;
-    enemyStat[3] = 1;
+    enemyStat[3] = 2;
     int i;
     for (i = 0; i < arrayLength/2;i++){
         set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,1,164);
@@ -603,6 +578,13 @@ void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[
 }
 
 void clr_bitmap(uint8_t arr[], int size){
+    int i;
+    for (i = 0; i < size*4;i++){
+        arr[i] = 0;
+    }
+
+}
+void clear_bitmap(int arr[], int size){
     int i;
     for (i = 0; i < size*4;i++){
         arr[i] = 0;
@@ -698,7 +680,7 @@ void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength)
 
 
 
-
+//Kollar om enemies lever eller inte. Sedan minska x for forflyttning.
 void check_enemy_placement(void){
     if (enemy_placement1[2] == 1){
         enemy_placement1[0]--;
@@ -741,6 +723,7 @@ void update_enemies(void){
 
 }
 
+//visa liv
 void paint_life(void){
     int i;
  /* switch(lives){
@@ -770,9 +753,10 @@ void paint_life(void){
     }          */
     for (i = 0; i < 10;i++){
         game[i] |= life[i];
-    }        
+    }
 }
 
+//for att valja skepp i menu
 void menu_ship(int x, int y, int show[], int remove[]){
     int i;
     for (i = 0; i < 11;i++) {
@@ -938,6 +922,39 @@ void run_enemies(void){
     moveEnemiesCount++;
     spawnEnemyCount++;
 }
+<<<<<<< HEAD
+// reset game
+void reset_game(void){
+    clr_bitmap(enemies,164);
+    clr_bitmap(projectiles,128);
+    clear_bitmap(enemy_placement1,1);
+    clear_bitmap(enemy_placement2,1);
+    clr_game();
+    secCount = 0;
+    buttonCount=0;
+    projectileCount = 0;
+    createProjectileCount = 0;
+    mapCount = 0;
+    createMapCount=0;
+    lives = 3;
+    randCount = 0;
+    spawnEnemyCount = 0;
+    moveEnemiesCount = 0;
+    stopMove=0;
+    points = 0;
+    dmgCount =0;
+    min = 0;
+    sec = 0;
+    startClock=0;
+    end = 1;
+    ship_placementY=0;
+    ship_placementX=0;
+    startMapCount= 0;
+    points =0;
+    startClock =0;
+}
+
+<<<<<<< HEAD
 
 
 
@@ -956,13 +973,14 @@ void run_enemies(void){
 
 
 
+=======
+>>>>>>> cee739b7cba62c5f9473368b0c373ab3d3fe6f9e
 
-
-
-
+=======
+>>>>>>> cee739b7cba62c5f9473368b0c373ab3d3fe6f9e
 /* Helper function, local to this file.
    Converts a number to hexadecimal ASCII digits. */
-static void num32asc( char * s, int n ) 
+static void num32asc( char * s, int n )
 {
   int i;
   for( i = 28; i >= 0; i -= 4 )
@@ -971,43 +989,43 @@ static void num32asc( char * s, int n )
 
 /*
  * itoa
- * 
+ *
  * Simple conversion routine
  * Converts binary to decimal numbers
  * Returns pointer to (static) char array
- * 
+ *
  * The integer argument is converted to a string
  * of digits representing the integer in decimal format.
  * The integer is considered signed, and a minus-sign
  * precedes the string of digits if the number is
  * negative.
- * 
+ *
  * This routine will return a varying number of digits, from
  * one digit (for integers in the range 0 through 9) and up to
  * 10 digits and a leading minus-sign (for the largest negative
  * 32-bit integers).
- * 
+ *
  * If the integer has the special value
  * 100000...0 (that's 31 zeros), the number cannot be
  * negated. We check for this, and treat this as a special case.
  * If the integer has any other value, the sign is saved separately.
- * 
+ *
  * If the integer is negative, it is then converted to
  * its positive counterpart. We then use the positive
  * absolute value for conversion.
- * 
+ *
  * Conversion produces the least-significant digits first,
  * which is the reverse of the order in which we wish to
  * print the digits. We therefore store all digits in a buffer,
  * in ASCII form.
- * 
+ *
  * To avoid a separate step for reversing the contents of the buffer,
  * the buffer is initialized with an end-of-string marker at the
  * very end of the buffer. The digits produced by conversion are then
  * stored right-to-left in the buffer: starting with the position
  * immediately before the end-of-string marker and proceeding towards
  * the beginning of the buffer.
- * 
+ *
  * For this to work, the buffer size must of course be big enough
  * to hold the decimal representation of the largest possible integer,
  * and the minus sign, and the trailing end-of-string marker.
@@ -1021,7 +1039,7 @@ char * itoaconv( int num )
   register int i, sign;
   static char itoa_buffer[ ITOA_BUFSIZ ];
   static const char maxneg[] = "-2147483648";
-  
+
   itoa_buffer[ ITOA_BUFSIZ - 1 ] = 0;   /* Insert the end-of-string marker. */
   sign = num;                           /* Save sign. */
   if( num < 0 && num - 1 > 0 )          /* Check for most negative integer */
@@ -1049,6 +1067,3 @@ char * itoaconv( int num )
    * we must add 1 in order to return a pointer to the first occupied position. */
   return( &itoa_buffer[ i + 1 ] );
 }
-
-
-
