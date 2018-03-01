@@ -1,3 +1,18 @@
+/* Declare functions written by students.
+   Note: Since we declare these functions here,
+   students must define their functions with the exact types
+   specified in the laboratory instructions. */
+/* Written as part of asm lab: delay, time2string */
+void delay(int);
+void time2string( char *, int );
+/* Written as part of i/o lab: getbtns, getsw, enable_interrupt */
+int getbtns(void);
+int getsw(void);
+void enable_interrupt(void);
+
+//Initializing
+void set_init(void);
+
 /* mipslab.h
    Header file for all labs.
    This file written 2015 by F Lundevall
@@ -13,75 +28,109 @@ void display_init(void);
 void display_string(int line, char *s);
 void display_update(void);
 void display_game(uint8_t array[]);
+
+void menu_ship(int x, int y, int show[], int remove[]);
+
+void reset_game(void);
+void game_over(void);
+void end_game(void);
+void game_clock(void);
+
+//***SCORE***//
+void score_board(void);
+void intro_screen(void);
+
+
+//*******MOVE**********//
 void move(int x, int y, int array[],int arrayLength);
-void test(void);
+void move_projectiles(void);
+void move_map(void);
+void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]);
+
+void paint_map(void);
+void paint_life(void);
+
+//*******UPDATE & CREATE**********//
+void create_projectile(int startX, int startY, int faction);
+void update_game(uint8_t  arr[]);
+void update_map(void);
+void update_score(void);
+
+
+//Enemies
+void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]);  //new
+void update_enemies(void);
+void spawn_enemy(void);
+void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength);
+void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]);
+
+//*******CLEAR**********//
+void clear_game(void);
+void clr_game(void);
+void clear_bitmap(int arr[], int size);
+void clr_bitmap(uint8_t arr[], int size);
+void update_score(void);
+
+
+//*******RUN**********//
+void run_projectile(void);
+void run_control(void);
+void run_map(void);
+void run_enemies(void);
+
+
+//*******SET & GET**********//
 void set_coordinate(int x, int y, uint8_t array[], int setClr, int arraySize);
 int get_coordinate(int x, int y, uint8_t arr[], int arraySize);
 
 
 uint8_t spi_send_recv(uint8_t data);
 
-void clear_game(void);
-void clr_game(void);
-void clear_bitmap(int arr[], int size);
-void clr_bitmap(uint8_t arr[], int size);
+
 extern int ship_placementY;
 extern int ship_placementX;
 void start_pos(void);
-void create_projectile(int startX, int startY, int faction);
-void move_projectiles(void);
-void update_game(uint8_t  arr[]);
-void paint_map(void);
-void move_map(void);
-void update_map(void);
-void paint_life(void);
-void reset_game(void);
 
-//Enemies
-void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]);  //new
-void update_enemies(void);
-void spawn_enemy(void);
 
+extern int createMapCount;
+extern int startMapCount;
+extern int mapCount;
+
+//***TIMER***//
 extern uint8_t gameTimer[];
-void game_clock(void);
+extern int secCount;
 extern int sec;
 extern int min;
 extern int startClock;
 extern int end;
-void end_game(void);
-void score_board(void);
 
-
+//***SCORE***//
 extern int highscore[9];
 extern int scoreCount;
 
+extern int projectileCount;
+extern int createProjectileCount;
+extern int buttonCount;
+extern int LEDlight;
+
+//***ENEMIES***//
+extern int spawnEnemyCount;
+extern int moveEnemiesCount;
+
+//***DMG***//
+extern int dmgCount;
+extern int takeLife;
+extern int points;
 
 
 //counters
 extern int commandCount;
-extern int projectileCount;
-extern int createProjectileCount;
-extern int mapCount;
-extern int buttonCount;
-extern int secCount;
-extern int createMapCount;
 extern int randCount;
-extern int moveEnemiesCount;
-extern int dmgCount;
-extern int spawnEnemyCount;
-extern int startMapCount;
-extern int takeLife;
 extern int gameOver;
-int LEDlight;
+extern int shift;
+extern int gameOn;
 
 
-void game_over(void);
-
-void run_projectile(void);
-void run_control(void);
-void run_map(void);
-void run_enemies(void);
-void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]);
 
 /* Declare lab-related functions from mipslabfunc.c */
 char * itoaconv( int num );
@@ -128,20 +177,16 @@ extern uint8_t stad2[15];
 extern uint8_t stad3[15];
 extern uint8_t stad4[15];
 
-void update_score(void);
-void menu_ship(int x, int y, int show[], int remove[]);
-void intro_screen(void);
+
 
 extern uint8_t enemies[4*164];
 extern int TIE1[32]; //new
 // [0] = x coord, [1] = y-coord, [2] = om 1 alive om 0 död, [3] hp
 extern int enemy_placement1[4];
 extern int enemy_placement2[4];
-void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength);
-void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]);
+
 void select_menu(void);
-extern int points;
-extern int gameOn;
+
 
 
 //void start_random_counter(void);
