@@ -426,7 +426,7 @@ void update_score(void){
     }
 }
 
-//light up the game "board" on the screen
+//used to show a black background screen and white text
 void display_game(uint8_t array[]) {
     int i, j;
 
