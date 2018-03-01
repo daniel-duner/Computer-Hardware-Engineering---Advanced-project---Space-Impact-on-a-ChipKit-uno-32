@@ -1013,8 +1013,8 @@ void game_over(void){
     if (gameOver >= 0) {
         while (1) {
             display_string(0, "    GAME OVER");
-            display_string(0, "    ");
-            display_string(0, "    ");
+            display_string(1, "    ");
+            display_string(2, "    ");
             display_update();
             delay(500);
             break;
