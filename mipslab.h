@@ -72,7 +72,7 @@ extern int spawnEnemyCount;
 extern int startMapCount;
 extern int takeLife;
 extern int gameOver;
-extern int shift;
+int LEDlight;
 
 
 void game_over(void);

@@ -41,14 +41,8 @@ int startClock=0;
 int scoreCount=0;
 int takeLife = 0;
 int gameOver = 1;
-int shift =0;
-int lvl = 1;
-
-/*shift++;
-PORTE = PORTE | shift << 1 ;
-PORTE = PORTE & ~(shift >> 1);
-shift--;*/
-
+int lvl = 3;
+int LEDlight =0;
 
 
 //ALREADY EXISTING FUNCTIONS
@@ -254,16 +248,31 @@ void user_isr( void ) {
     IFS(0)=0;
     secCount++;
     end_game();
+    //seconds
     if (secCount== 10 && end!=0){
         if(spawnEnemyCount >= 0){
             sec++;
+            if(sec == 30){
+                lvl= 2;
+                moveEnemiesCount = 0;
+            }
         }
         secCount = 0;
         spawnEnemyCount++;
     }
+    //random counter
     if (randCount == 10) {
         randCount = 0;
     }
+    //for LED
+    if(LEDlight == 17){
+        LEDlight = 0;
+    }
+
+    if(secCount == 8 || secCount == 16){
+        PORTE = PORTE >>1  | 0;
+    }
+
     randCount++;
     return;
 }
@@ -542,7 +551,7 @@ void menu_ship(int x, int y, int show[], int remove[]){
     }
 }
 
-//paints the map depending on lvl, clouds or city
+//paints the map depending on time, clouds or city
 void paint_map(void){
     int i,k,r;
     r = rand(4);
@@ -617,13 +626,12 @@ void update_map(void){
     }
 }
 
-//Enemies
 //creates enemies on the enmeies array
 void create_enemy(int x, int y, int enemyChar[], int arrayLength, int enemyStat[]){
     enemyStat[0] = x;
     enemyStat[1] = y;
     enemyStat[2] = 1;
-    enemyStat[3] = 4;
+    enemyStat[3] = 10-(2*lvl);
     int i;
     for (i = 0; i < arrayLength/2;i++){
         set_coordinate(x+enemyChar[i],y+enemyChar[i+arrayLength/2],enemies,1,164);
@@ -652,18 +660,37 @@ void clear_bitmap(int arr[], int size){
 //makes the enemy move and also update it's position
 void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
     int i;
-    for (i = 0; i < arrayLength / 2; i++) {
-        set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 0, 164);
-    }
-    enemyStat[0] -=1;
-    if (enemyStat[0] == 5){
-        enemyStat[2] = 0;
-    }
-    if(enemyStat[2] == 1) {
+    if(sec < 30) {
         for (i = 0; i < arrayLength / 2; i++) {
-            set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 1, 164);
+            set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 0, 164);
+        }
+        enemyStat[0] -= 1;
+        if (enemyStat[0] == 5) {
+            enemyStat[2] = 0;
+        }
+        if (enemyStat[2] == 1) {
+            for (i = 0; i < arrayLength / 2; i++) {
+                set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 1,
+                               164);
+            }
         }
     }
+    if(sec > 30) {
+        for (i = 0; i < arrayLength / 2; i++) {
+            set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 0, 164);
+        }
+        enemyStat[0] -= 1;
+        if (enemyStat[0] == 5) {
+            enemyStat[2] = 0;
+        }
+        if (enemyStat[2] == 1) {
+            for (i = 0; i < arrayLength / 2; i++) {
+                set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 1,
+                               164);
+            }
+        }
+    }
+
 
 }
 
@@ -831,6 +858,7 @@ void update_game(uint8_t arr[]){
 void create_projectile(int startX, int startY, int faction){
         set_coordinate(startX, startY, projectiles, 1, 128);
         set_coordinate(startX+1, startY, projectiles, 1,128);
+        PORTE = PORTE <<1  | 1;
 
 }
 
@@ -858,7 +886,6 @@ void run_projectile(void){
     }
     projectileCount++;
     if(createProjectileCount < 1){
-
         createProjectileCount = 1;
         if ((getbtns() & 0x1) == 1) {
             create_projectile(ship_placementX+5,ship_placementY+1,1);
@@ -917,7 +944,7 @@ void run_enemies(void){
         }
         spawnEnemyCount = 0;
     }
-    if (moveEnemiesCount == 3) {
+    if (moveEnemiesCount == lvl) {
         {
             if (enemy_placement1[2] == 1) {
                 if(sec < 30){
@@ -970,7 +997,6 @@ void reset_game(void){
     dmgCount =0;
     min = 0;
     sec = 0;
-    startClock=0;
     ship_placementY=0;
     ship_placementX=0;
     startMapCount= 0;
@@ -979,6 +1005,7 @@ void reset_game(void){
     end = 1;
     enemy_placement1[3] = 1;
     enemy_placement2[3] = 1;
+    lvl = 3;
 }
 
 //end screen
