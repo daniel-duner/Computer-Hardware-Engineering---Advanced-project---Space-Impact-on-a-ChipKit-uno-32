@@ -24,13 +24,14 @@ int main(void) {
         set_init();
         display_init();
         labinit(); /* Do any lab-specific initialization */
-        intro();
+        intro_screen();
         clear_game();
         select_menu();
 
         run_map();
 
         clr_game();
+        points = 0;
         update_score();
         update_map();
         start_pos();
@@ -41,7 +42,7 @@ int main(void) {
             startMapCount++;
             display_game(game);
         }
-
+        gameOn = 1;
         while (end!=0) {
             run_map();
             run_projectile();
@@ -60,6 +61,7 @@ int main(void) {
             display_image(game);
 
         }
+        gameOn=0;
         game_over();
         score_board();
 

@@ -72,6 +72,7 @@ extern int spawnEnemyCount;
 extern int startMapCount;
 extern int takeLife;
 extern int gameOver;
+extern int shift;
 
 
 void game_over(void);
@@ -120,21 +121,28 @@ extern int lives;
 extern uint8_t select_ship[58];
 extern uint8_t numbers[30];
 extern uint8_t score_text[35];
+extern int missile[42];
+extern int lvl;
+extern uint8_t stad1[15];
+extern uint8_t stad2[15];
+extern uint8_t stad3[15];
+extern uint8_t stad4[15];
 
 void update_score(void);
 void menu_ship(int x, int y, int show[], int remove[]);
-void intro(void);
+void intro_screen(void);
 
 extern uint8_t enemies[4*164];
 extern int TIE1[32]; //new
 // [0] = x coord, [1] = y-coord, [2] = om 1 alive om 0 död, [3] hp
 extern int enemy_placement1[4];
 extern int enemy_placement2[4];
-void check_enemy_placement(void);
 void dmg(uint8_t dealer[], int receiver[], int character[], int characterLength);
 void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]);
 void select_menu(void);
 extern int points;
+extern int gameOn;
+
 
 //void start_random_counter(void);
 int random(int mod);
