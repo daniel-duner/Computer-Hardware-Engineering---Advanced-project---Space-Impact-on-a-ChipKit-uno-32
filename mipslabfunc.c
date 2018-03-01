@@ -273,7 +273,7 @@ void intro_screen(void){
     while(1){
         display_string(0, "--Space Impact--");
         display_string(1, "    To start");
-        display_string(2, "Press btn 3 & 4");
+        display_string(2, "Press btn 3 or 4");
         display_update();
         if(getbtns()& 6){
             break;
@@ -897,6 +897,7 @@ void run_Control(void){
 //make enemies spawn
 void run_enemies(void){
     if (spawnEnemyCount == 2){
+        if(sec < 30){
         if (enemy_placement1[2]==0) {
             create_enemy(150, 18, TIE1, 32, enemy_placement1);
         }
@@ -904,25 +905,50 @@ void run_enemies(void){
             create_enemy(150, 8, TIE1, 32, enemy_placement2);
 
         }
+        }
+        if(sec > 30) {
+            if (enemy_placement1[2] == 0) {
+                create_enemy(150, 18, missile, 42, enemy_placement1);
+            }
+            if (enemy_placement2[2] == 0) {
+                create_enemy(150, 8, missile, 42, enemy_placement2);
+
+            }
+        }
         spawnEnemyCount = 0;
     }
     if (moveEnemiesCount == 3) {
         {
             if (enemy_placement1[2] == 1) {
-                move_enemy(TIE1, 32, enemy_placement1);
+                if(sec < 30){
+                    move_enemy(TIE1, 32, enemy_placement1);
+                }
+                if(sec > 30){
+                    move_enemy(missile, 42, enemy_placement1);
+                }
             }
             if (enemy_placement2[2] == 1) {
-                move_enemy(TIE1, 32, enemy_placement2);
+                if(sec < 30){
+                    move_enemy(TIE1, 32, enemy_placement2);
+                }
+                if(sec > 30){
+                    move_enemy(missile, 42, enemy_placement2);
+                }
             }
-
-            dmg(projectiles, enemy_placement1, TIE1, 32);
-            dmg(projectiles, enemy_placement2, TIE1, 32);
-
+            if(sec < 30) {
+                dmg(projectiles, enemy_placement1, TIE1, 32);
+                dmg(projectiles, enemy_placement2, TIE1, 32);
+            }
+            if(sec > 30) {
+                dmg(projectiles, enemy_placement1, missile, 42);
+                dmg(projectiles, enemy_placement2, missile, 42);
+            }
             moveEnemiesCount = 0;
         }
     }
     moveEnemiesCount++;
 }
+
 // reset game
 void reset_game(void){
     clr_bitmap(map,36);
@@ -951,6 +977,8 @@ void reset_game(void){
     startClock =0;
     points = 0;
     end = 1;
+    enemy_placement1[3] = 1;
+    enemy_placement2[3] = 1;
 }
 
 //end screen
