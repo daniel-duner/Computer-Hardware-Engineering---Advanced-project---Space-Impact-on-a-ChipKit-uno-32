@@ -31,8 +31,6 @@ int main(void) {
         run_map();
 
         clr_game();
-        points = 0;
-        update_score();
         update_map();
         start_pos();
         display_image(game);
@@ -42,7 +40,7 @@ int main(void) {
             startMapCount++;
             display_game(game);
         }
-        gameOn = 1;
+        update_score();
         while (end!=0) {
             run_map();
             run_projectile();
@@ -61,7 +59,6 @@ int main(void) {
             display_image(game);
 
         }
-        gameOn=0;
         game_over();
         score_board();
 

@@ -43,7 +43,6 @@ int takeLife = 0;
 int gameOver = 1;
 int shift =0;
 int lvl = 1;
-int gameOn = 0;
 
 /*shift++;
 PORTE = PORTE | shift << 1 ;
@@ -328,7 +327,6 @@ void game_clock(void){
 
 //Score board
 void score_board(void){
-    gameOn=0;
     if (end == 0) {
             highscore[scoreCount] = points;
             scoreCount++;
@@ -401,14 +399,14 @@ void end_game(void){
 }
 
 //returns a semi-random number depends on counters
-//parameter is the amount of random numbmbers 2 equals 0,1 as returns
+//parameter is the amount of random numbers 2 equals 0,1 as returns
 int rand(int mod){
     int random = (randCount+createProjectileCount)%mod;
     randCount = 0;
     return random;
 }
 
-//Updates the score the in game scoure counter
+//Updates the score the in game score counter
 void update_score(void){
     int i,j,k;
     k = points/10;
@@ -671,7 +669,6 @@ void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
 
 //kills of an enemy also makes points increase on a kill and also check end_game
 void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
-    if(gameOn == 1){
         int i;
         if(enemy_placement1[2] == 0){
         for (i = 164*2; i < 164*3; i++ ) {
@@ -697,7 +694,7 @@ void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
             points++;
             end_game();
     }
-    }
+
 }
 
 //handles the dmg checking on the ship and on the enemies
@@ -917,10 +914,10 @@ void run_enemies(void){
             if (enemy_placement2[2] == 1) {
                 move_enemy(TIE1, 32, enemy_placement2);
             }
-            if(gameOn == 1){
+
             dmg(projectiles, enemy_placement1, TIE1, 32);
             dmg(projectiles, enemy_placement2, TIE1, 32);
-            }
+
             moveEnemiesCount = 0;
         }
     }
@@ -948,11 +945,12 @@ void reset_game(void){
     min = 0;
     sec = 0;
     startClock=0;
-    end = 1;
     ship_placementY=0;
     ship_placementX=0;
     startMapCount= 0;
     startClock =0;
+    points = 0;
+    end = 1;
 }
 
 //end screen
@@ -960,25 +958,14 @@ void game_over(void){
     if (gameOver >= 0) {
         while (1) {
             display_string(0, "    GAME OVER");
+            display_string(0, "    ");
+            display_string(0, "    ");
             display_update();
             delay(500);
             break;
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
