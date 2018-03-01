@@ -1,17 +1,3 @@
-/* Declare functions written by students.
-   Note: Since we declare these functions here,
-   students must define their functions with the exact types
-   specified in the laboratory instructions. */
-/* Written as part of asm lab: delay, time2string */
-void delay(int);
-void time2string( char *, int );
-/* Written as part of i/o lab: getbtns, getsw, enable_interrupt */
-int getbtns(void);
-int getsw(void);
-void enable_interrupt(void);
-
-//Initializing
-void set_init(void);
 
 /* mipslab.h
    Header file for all labs.
@@ -153,7 +139,7 @@ void tick( unsigned int * timep );
 */
 void display_debug( volatile int * const addr );
 
-/* Declare bitmap array containing font */
+/* Declare bitmap array*/
 extern uint8_t game[128*4];
 extern uint8_t map[144];
 extern uint8_t projectiles[128*4];

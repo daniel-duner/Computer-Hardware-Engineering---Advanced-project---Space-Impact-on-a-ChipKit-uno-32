@@ -29,7 +29,6 @@ int main(void) {
         select_menu();
 
         run_map();
-
         clr_game();
         update_map();
         start_pos();

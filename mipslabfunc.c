@@ -261,7 +261,7 @@ void user_isr( void ) {
         spawnEnemyCount++;
     }
     //random counter
-    if (randCount == 10) {
+    if (randCount == 735) {
         randCount = 0;
     }
     //for LED
@@ -532,6 +532,8 @@ void select_menu(void){
 
         display_game(game);
         if ((getbtns() & 0x1) == 1) {
+            startClock = 0;
+            spawnEnemyCount = -10;
             break;
         }
     }
@@ -885,7 +887,7 @@ void run_projectile(void){
         projectileCount=0;
     }
     projectileCount++;
-    if(createProjectileCount < 1){
+    if(createProjectileCount < 1 && spawnEnemyCount >= -8){
         createProjectileCount = 1;
         if ((getbtns() & 0x1) == 1) {
             create_projectile(ship_placementX+5,ship_placementY+1,1);
@@ -992,7 +994,6 @@ void reset_game(void){
     createMapCount=0;
     lives = 3;
     randCount = 0;
-    spawnEnemyCount = -10;
     moveEnemiesCount = 0;
     dmgCount =0;
     min = 0;
@@ -1000,7 +1001,6 @@ void reset_game(void){
     ship_placementY=0;
     ship_placementX=0;
     startMapCount= 0;
-    startClock =0;
     points = 0;
     end = 1;
     enemy_placement1[3] = 1;
@@ -1011,12 +1011,11 @@ void reset_game(void){
 //end screen
 void game_over(void){
     if (gameOver >= 0) {
-        while (1) {
-            display_string(0, "    GAME OVER");
-            display_string(1, "    ");
+        while (400) {
+            display_string(0, "");
+            display_string(1, "    GAME OVER");
             display_string(2, "    ");
             display_update();
-            delay(500);
             break;
         }
     }
