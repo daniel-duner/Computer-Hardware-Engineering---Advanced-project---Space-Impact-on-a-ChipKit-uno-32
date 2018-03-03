@@ -700,9 +700,12 @@ void move_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
 void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
         int i;
         if(enemy_placement1[2] == 0){
-        for (i = 164*2; i < 164*3; i++ ) {
+            for (i = 0; i < arrayLength / 2; i++) {
+                set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 0, 164);
+            }
+        /*for (i = 164*2; i < 164*3; i++ ) {
             enemies[i] = 0;
-        }
+        }*/
         for (i = 0;i < 3;i++){
             enemyStat[i] = 0;
         }
@@ -712,9 +715,12 @@ void kill_enemy(int enemyChar[], int arrayLength, int enemyStat[]){
         }
 
         if(enemy_placement2[2] == 0) {
-            for (i = 164; i < 164 * 2; i++) {
-                enemies[i] = 0;
+            for (i = 0; i < arrayLength / 2; i++) {
+                set_coordinate(enemyStat[0] + enemyChar[i], enemyStat[1] + enemyChar[i + arrayLength / 2], enemies, 0, 164);
             }
+            /*for (i = 164; i < 164 * 2; i++) {
+                enemies[i] = 0;
+            }*/
 
             for (i = 0;i < 3;i++){
                 enemyStat[i] = 0;
@@ -1010,15 +1016,21 @@ void reset_game(void){
 
 //end screen
 void game_over(void){
-    if (gameOver >= 0) {
-        while (400) {
+    //if (gameOver >= 0) {
+    int i,k;
+
+        while (k<300) {
             display_string(0, "");
             display_string(1, "    GAME OVER");
             display_string(2, "    ");
             display_update();
-            break;
+            i++;
+            if(i == 10){
+                k++;
+                i = 0;
+            }
         }
-    }
+    //}
 }
 
 

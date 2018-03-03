@@ -24,6 +24,8 @@ int main(void) {
         set_init();
         display_init();
         labinit(); /* Do any lab-specific initialization */
+
+        //Dispalys intro screen
         intro_screen();
         clear_game();
         select_menu();
@@ -34,12 +36,15 @@ int main(void) {
         start_pos();
         display_image(game);
         update_game(projectiles);
+        //The map will run and you are able to move the ship and shoot
         while (startMapCount == 900) {
             run_map();
             startMapCount++;
             display_game(game);
         }
         update_score();
+
+        //the main game starts and game timer and snemy spawning starts
         while (end!=0) {
             run_map();
             run_projectile();
